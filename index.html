@@ -18,14 +18,120 @@
                 <h2 class="game-subtitle">Medicine Cats</h2>
                 <p class="tagline">Heal your Clanmates with the power of herbs</p>
             </div>
-            <button id="play-btn" class="btn btn-play">
-                ✨ Play ✨
-            </button>
+            <div class="home-buttons">
+                <button id="learn-btn" class="btn btn-learn">
+                    📚 Learn to be a Medicine Cat
+                </button>
+                <button id="play-btn" class="btn btn-play">
+                    ✨ Play Game ✨
+                </button>
+            </div>
             <p class="hint-text">Try clicking the stars above...</p>
             <div class="leaf-decorations">
                 <span class="leaf">🍃</span>
                 <span class="leaf">🌿</span>
                 <span class="leaf">🍂</span>
+            </div>
+        </div>
+
+        <!-- Tutorial/Learning Screen -->
+        <div id="tutorial-screen" class="screen">
+            <div class="forest-bg"></div>
+            <div class="tutorial-content">
+                <div class="mentor-section">
+                    <div class="mentor-cat">😺</div>
+                    <div class="mentor-info">
+                        <h2>Healingheart</h2>
+                        <p class="mentor-title">Medicine Cat Mentor</p>
+                    </div>
+                </div>
+                <div class="mentor-speech" id="mentor-speech">
+                    <p>"Welcome, young one! I am Healingheart, and I will teach you the ways of a medicine cat."</p>
+                </div>
+                <div class="tutorial-options" id="tutorial-options">
+                    <p>Choose how you'd like to learn:</p>
+                    <button class="btn btn-tutorial" data-level="easy">
+                        🌸 Easy Herbs
+                        <span>Learn simple remedies first</span>
+                    </button>
+                    <button class="btn btn-tutorial" data-level="medium">
+                        🌿 Medium Herbs
+                        <span>Learn moderate treatments</span>
+                    </button>
+                    <button class="btn btn-tutorial" data-level="hard">
+                        🌑 Hard Herbs
+                        <span>Learn complex medicine</span>
+                    </button>
+                </div>
+                <div class="tutorial-lesson" id="tutorial-lesson" style="display: none;">
+                    <div class="herb-teaching">
+                        <span class="teaching-herb-icon" id="teaching-herb-icon">🌿</span>
+                        <h3 id="teaching-herb-name">Catmint</h3>
+                        <p id="teaching-herb-use">Cures greencough</p>
+                    </div>
+                    <div class="lesson-controls">
+                        <button id="next-herb-btn" class="btn btn-secondary">Next Herb →</button>
+                        <button id="practice-btn" class="btn btn-primary">🎯 Practice</button>
+                    </div>
+                </div>
+                <div class="tutorial-practice" id="tutorial-practice" style="display: none;">
+                    <p class="practice-question" id="practice-question">What herb cures greencough?</p>
+                    <div class="practice-options" id="practice-options">
+                        <!-- Options will be added by JS -->
+                    </div>
+                    <p class="practice-feedback" id="practice-feedback"></p>
+                </div>
+                <div class="tutorial-bottom">
+                    <button id="back-to-menu-btn" class="btn btn-secondary">← Back to Menu</button>
+                    <button id="im-ready-btn" class="btn btn-ready" style="display: none;">
+                        ✨ I'm Ready! ✨
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Slot Selection Screen -->
+        <div id="saves-screen" class="screen">
+            <div class="forest-bg"></div>
+            <div class="saves-content">
+                <h1>🎮 Choose a Save Slot</h1>
+                <p class="saves-intro">You can have up to 3 medicine cats!</p>
+                <div class="save-slots">
+                    <div class="save-slot" data-slot="1">
+                        <div class="slot-icon" id="slot-icon-1">🐱</div>
+                        <div class="slot-info">
+                            <h3 id="slot-name-1">Empty Slot</h3>
+                            <p id="slot-details-1">Start a new adventure</p>
+                        </div>
+                        <div class="slot-actions">
+                            <button class="btn-slot-play" data-slot="1">Play</button>
+                            <button class="btn-slot-delete" data-slot="1" style="display: none;">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="save-slot" data-slot="2">
+                        <div class="slot-icon" id="slot-icon-2">🐱</div>
+                        <div class="slot-info">
+                            <h3 id="slot-name-2">Empty Slot</h3>
+                            <p id="slot-details-2">Start a new adventure</p>
+                        </div>
+                        <div class="slot-actions">
+                            <button class="btn-slot-play" data-slot="2">Play</button>
+                            <button class="btn-slot-delete" data-slot="2" style="display: none;">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="save-slot" data-slot="3">
+                        <div class="slot-icon" id="slot-icon-3">🐱</div>
+                        <div class="slot-info">
+                            <h3 id="slot-name-3">Empty Slot</h3>
+                            <p id="slot-details-3">Start a new adventure</p>
+                        </div>
+                        <div class="slot-actions">
+                            <button class="btn-slot-play" data-slot="3">Play</button>
+                            <button class="btn-slot-delete" data-slot="3" style="display: none;">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="saves-back-btn" class="btn btn-secondary">← Back to Menu</button>
             </div>
         </div>
 

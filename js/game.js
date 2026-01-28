@@ -15,6 +15,11 @@ const Game = {
     selectedPattern: 'solid',
     apprentice: null,
     invasionSurvived: true,
+    currentSaveSlot: null,
+    tutorialLevel: null,
+    tutorialHerbIndex: 0,
+    tutorialHerbs: [],
+    practiceCorrect: 0,
 
     /**
      * Initialize the game
@@ -23,6 +28,8 @@ const Game = {
         // Get all screen elements
         this.screens = {
             home: document.getElementById('home-screen'),
+            tutorial: document.getElementById('tutorial-screen'),
+            saves: document.getElementById('saves-screen'),
             name: document.getElementById('name-screen'),
             difficulty: document.getElementById('difficulty-screen'),
             game: document.getElementById('game-screen'),
@@ -34,7 +41,24 @@ const Game = {
         // Get game elements
         this.elements = {
             starsContainer: document.getElementById('stars-container'),
+            learnBtn: document.getElementById('learn-btn'),
             playBtn: document.getElementById('play-btn'),
+            // Tutorial elements
+            mentorSpeech: document.getElementById('mentor-speech'),
+            tutorialOptions: document.getElementById('tutorial-options'),
+            tutorialLesson: document.getElementById('tutorial-lesson'),
+            tutorialPractice: document.getElementById('tutorial-practice'),
+            teachingHerbIcon: document.getElementById('teaching-herb-icon'),
+            teachingHerbName: document.getElementById('teaching-herb-name'),
+            teachingHerbUse: document.getElementById('teaching-herb-use'),
+            nextHerbBtn: document.getElementById('next-herb-btn'),
+            practiceBtn: document.getElementById('practice-btn'),
+            practiceQuestion: document.getElementById('practice-question'),
+            practiceOptions: document.getElementById('practice-options'),
+            practiceFeedback: document.getElementById('practice-feedback'),
+            backToMenuBtn: document.getElementById('back-to-menu-btn'),
+            imReadyBtn: document.getElementById('im-ready-btn'),
+            savesBackBtn: document.getElementById('saves-back-btn'),
             namePrefix: document.getElementById('name-prefix'),
             suffixGrid: document.getElementById('suffix-grid'),
             fullNamePreview: document.getElementById('full-name-preview'),
@@ -102,11 +126,8 @@ const Game = {
         // Set up event listeners
         this.setupEventListeners();
 
-        // Load saved high score
-        const savedData = GameLogic.loadFromStorage('medicineCatData');
-        if (savedData) {
-            this.highScore = savedData.highScore || 0;
-        }
+        // Load save slots
+        this.loadSaveSlots();
 
         console.log('🐱 Medicine Cat game initialized!');
     },
@@ -206,11 +227,70 @@ const Game = {
      * Set up all event listeners
      */
     setupEventListeners: function() {
-        // Play button on home screen - goes to name screen
+        // Learn button - goes to tutorial
+        this.elements.learnBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.playSound('select');
+            this.showScreen('tutorial');
+            this.resetTutorial();
+        });
+
+        // Play button on home screen - goes to save slots
         this.elements.playBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.playSound('success');
-            this.showScreen('name');
+            this.loadSaveSlots();
+            this.showScreen('saves');
+        });
+
+        // Tutorial level buttons
+        document.querySelectorAll('.btn-tutorial').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.startTutorialLevel(btn.dataset.level);
+            });
+        });
+
+        // Next herb button
+        this.elements.nextHerbBtn.addEventListener('click', () => {
+            this.nextTutorialHerb();
+        });
+
+        // Practice button
+        this.elements.practiceBtn.addEventListener('click', () => {
+            this.startPractice();
+        });
+
+        // Back to menu from tutorial
+        this.elements.backToMenuBtn.addEventListener('click', () => {
+            this.playSound('select');
+            this.showScreen('home');
+        });
+
+        // I'm Ready button
+        this.elements.imReadyBtn.addEventListener('click', () => {
+            this.playSound('success');
+            this.loadSaveSlots();
+            this.showScreen('saves');
+        });
+
+        // Back to menu from saves
+        this.elements.savesBackBtn.addEventListener('click', () => {
+            this.playSound('select');
+            this.showScreen('home');
+        });
+
+        // Save slot buttons
+        document.querySelectorAll('.btn-slot-play').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectSaveSlot(parseInt(btn.dataset.slot));
+            });
+        });
+
+        document.querySelectorAll('.btn-slot-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteSaveSlot(parseInt(btn.dataset.slot));
+            });
         });
 
         // Name prefix input
@@ -257,9 +337,12 @@ const Game = {
         this.elements.confirmNameBtn.addEventListener('click', () => {
             const prefix = this.elements.namePrefix.value.trim();
             if (prefix && this.selectedSuffix) {
+                // Capitalize first letter
+                const formattedPrefix = prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
+                
                 // Store the name (with 'paw' for now - apprentice)
-                this.playerName = prefix + 'paw';
-                this.fullWarriorName = prefix + this.selectedSuffix;
+                this.playerName = formattedPrefix + 'paw';
+                this.fullWarriorName = formattedPrefix + this.selectedSuffix;
                 this.playSound('success');
                 
                 // Update greeting on difficulty screen
@@ -720,6 +803,8 @@ const Game = {
      * Wake up and start next night
      */
     wakeUp: function() {
+        // Save progress before starting new night
+        this.saveGame();
         this.startNewNight();
     },
 
@@ -909,6 +994,258 @@ const Game = {
         }
         
         this.elements.apprenticeHint.style.display = 'none';
+    },
+
+    // ==================== TUTORIAL SYSTEM ====================
+
+    /**
+     * Reset tutorial to initial state
+     */
+    resetTutorial: function() {
+        this.elements.tutorialOptions.style.display = 'block';
+        this.elements.tutorialLesson.style.display = 'none';
+        this.elements.tutorialPractice.style.display = 'none';
+        this.elements.imReadyBtn.style.display = 'none';
+        this.elements.mentorSpeech.innerHTML = '<p>"Welcome, young one! I am Healingheart, and I will teach you the ways of a medicine cat."</p>';
+        this.practiceCorrect = 0;
+    },
+
+    /**
+     * Start a tutorial level
+     */
+    startTutorialLevel: function(level) {
+        this.tutorialLevel = level;
+        this.tutorialHerbIndex = 0;
+        this.playSound('select');
+
+        // Get herbs based on difficulty
+        const allHerbs = Object.entries(GameLogic.HERBS);
+        if (level === 'easy') {
+            this.tutorialHerbs = allHerbs.slice(0, 4); // First 4 herbs
+        } else if (level === 'medium') {
+            this.tutorialHerbs = allHerbs.slice(4, 8); // Middle 4 herbs
+        } else {
+            this.tutorialHerbs = allHerbs.slice(8); // Last herbs
+        }
+
+        this.elements.tutorialOptions.style.display = 'none';
+        this.elements.tutorialLesson.style.display = 'block';
+        this.elements.mentorSpeech.innerHTML = '<p>"Let me teach you about these herbs. Pay attention!"</p>';
+        
+        this.showTutorialHerb();
+    },
+
+    /**
+     * Show current tutorial herb
+     */
+    showTutorialHerb: function() {
+        const [key, herb] = this.tutorialHerbs[this.tutorialHerbIndex];
+        
+        this.elements.teachingHerbIcon.textContent = herb.icon;
+        this.elements.teachingHerbName.textContent = herb.name;
+        this.elements.teachingHerbUse.textContent = herb.description;
+
+        // Update mentor speech
+        const speeches = [
+            `"This is ${herb.name}. Remember, it ${herb.description.toLowerCase()}."`,
+            `"${herb.name} is very important. It ${herb.description.toLowerCase()}."`,
+            `"Pay attention to ${herb.name}. A good medicine cat knows it ${herb.description.toLowerCase()}."`
+        ];
+        this.elements.mentorSpeech.innerHTML = `<p>${speeches[Math.floor(Math.random() * speeches.length)]}</p>`;
+
+        // Update button text
+        if (this.tutorialHerbIndex >= this.tutorialHerbs.length - 1) {
+            this.elements.nextHerbBtn.textContent = "That's all!";
+            this.elements.nextHerbBtn.disabled = true;
+        } else {
+            this.elements.nextHerbBtn.textContent = "Next Herb →";
+            this.elements.nextHerbBtn.disabled = false;
+        }
+    },
+
+    /**
+     * Go to next tutorial herb
+     */
+    nextTutorialHerb: function() {
+        this.tutorialHerbIndex++;
+        this.playSound('select');
+        
+        if (this.tutorialHerbIndex < this.tutorialHerbs.length) {
+            this.showTutorialHerb();
+        }
+    },
+
+    /**
+     * Start practice mode
+     */
+    startPractice: function() {
+        this.playSound('select');
+        this.elements.tutorialLesson.style.display = 'none';
+        this.elements.tutorialPractice.style.display = 'block';
+        this.elements.mentorSpeech.innerHTML = '<p>"Now let\'s see what you remember! Choose the correct herb."</p>';
+        
+        this.showPracticeQuestion();
+    },
+
+    /**
+     * Show a practice question
+     */
+    showPracticeQuestion: function() {
+        // Pick a random herb from what we learned
+        const [correctKey, correctHerb] = this.tutorialHerbs[Math.floor(Math.random() * this.tutorialHerbs.length)];
+        
+        this.elements.practiceQuestion.textContent = `What herb ${correctHerb.description.toLowerCase()}?`;
+        this.elements.practiceFeedback.textContent = '';
+        
+        // Create options (correct + 3 wrong)
+        let options = [[correctKey, correctHerb]];
+        const allHerbs = Object.entries(GameLogic.HERBS);
+        while (options.length < 4) {
+            const random = allHerbs[Math.floor(Math.random() * allHerbs.length)];
+            if (!options.find(o => o[0] === random[0])) {
+                options.push(random);
+            }
+        }
+        
+        // Shuffle options
+        options = options.sort(() => Math.random() - 0.5);
+        
+        this.elements.practiceOptions.innerHTML = options.map(([key, herb]) => `
+            <button class="practice-option" data-herb="${key}" data-correct="${key === correctKey}">
+                ${herb.icon} ${herb.name}
+            </button>
+        `).join('');
+
+        // Add click handlers
+        this.elements.practiceOptions.querySelectorAll('.practice-option').forEach(btn => {
+            btn.addEventListener('click', () => this.checkPracticeAnswer(btn));
+        });
+    },
+
+    /**
+     * Check practice answer
+     */
+    checkPracticeAnswer: function(btn) {
+        const isCorrect = btn.dataset.correct === 'true';
+        
+        // Disable all buttons
+        this.elements.practiceOptions.querySelectorAll('.practice-option').forEach(b => {
+            b.style.pointerEvents = 'none';
+            if (b.dataset.correct === 'true') {
+                b.classList.add('correct');
+            } else if (b === btn && !isCorrect) {
+                b.classList.add('wrong');
+            }
+        });
+
+        if (isCorrect) {
+            this.playSound('success');
+            this.practiceCorrect++;
+            this.elements.practiceFeedback.textContent = '✅ Correct! Well done!';
+            this.elements.mentorSpeech.innerHTML = '<p>"Excellent! You remembered that one!"</p>';
+        } else {
+            this.playSound('fail');
+            this.elements.practiceFeedback.textContent = '❌ Not quite. Look at the correct answer.';
+            this.elements.mentorSpeech.innerHTML = '<p>"That\'s okay, keep learning. Look at the green one."</p>';
+        }
+
+        // Show I'm Ready button after some practice
+        if (this.practiceCorrect >= 2) {
+            this.elements.imReadyBtn.style.display = 'block';
+        }
+
+        // Next question after delay
+        setTimeout(() => {
+            this.showPracticeQuestion();
+        }, 2000);
+    },
+
+    // ==================== SAVE SYSTEM ====================
+
+    /**
+     * Load and display save slots
+     */
+    loadSaveSlots: function() {
+        for (let i = 1; i <= 3; i++) {
+            const saveData = GameLogic.loadFromStorage(`saveSlot${i}`);
+            const nameEl = document.getElementById(`slot-name-${i}`);
+            const detailsEl = document.getElementById(`slot-details-${i}`);
+            const iconEl = document.getElementById(`slot-icon-${i}`);
+            const deleteBtn = document.querySelector(`.btn-slot-delete[data-slot="${i}"]`);
+            const playBtn = document.querySelector(`.btn-slot-play[data-slot="${i}"]`);
+
+            if (saveData) {
+                nameEl.textContent = saveData.playerName || 'Unknown';
+                detailsEl.textContent = `Night ${saveData.night || 1} | Score: ${saveData.score || 0}`;
+                iconEl.textContent = saveData.catIcon || '🐱';
+                deleteBtn.style.display = 'block';
+                playBtn.textContent = 'Continue';
+            } else {
+                nameEl.textContent = 'Empty Slot';
+                detailsEl.textContent = 'Start a new adventure';
+                iconEl.textContent = '🐱';
+                deleteBtn.style.display = 'none';
+                playBtn.textContent = 'New Game';
+            }
+        }
+    },
+
+    /**
+     * Select a save slot
+     */
+    selectSaveSlot: function(slot) {
+        this.currentSaveSlot = slot;
+        const saveData = GameLogic.loadFromStorage(`saveSlot${slot}`);
+        
+        if (saveData) {
+            // Load existing game
+            this.playerName = saveData.playerName;
+            this.fullWarriorName = saveData.fullWarriorName;
+            this.selectedCatIcon = saveData.catIcon;
+            this.selectedPattern = saveData.pattern;
+            this.apprentice = saveData.apprentice;
+            this.state = saveData.state;
+            
+            this.playSound('success');
+            this.showScreen('game');
+            this.updateUI();
+            this.spawnNewPatient();
+        } else {
+            // New game - go to name screen
+            this.playSound('select');
+            this.showScreen('name');
+        }
+    },
+
+    /**
+     * Delete a save slot
+     */
+    deleteSaveSlot: function(slot) {
+        if (confirm('Are you sure you want to delete this save?')) {
+            localStorage.removeItem(`saveSlot${slot}`);
+            this.playSound('select');
+            this.loadSaveSlots();
+        }
+    },
+
+    /**
+     * Save current game to slot
+     */
+    saveGame: function() {
+        if (!this.currentSaveSlot) return;
+        
+        const saveData = {
+            playerName: this.playerName,
+            fullWarriorName: this.fullWarriorName,
+            catIcon: this.selectedCatIcon,
+            pattern: this.selectedPattern,
+            apprentice: this.apprentice,
+            state: this.state,
+            night: this.state.night,
+            score: this.state.score
+        };
+        
+        GameLogic.saveToStorage(`saveSlot${this.currentSaveSlot}`, saveData);
     }
 };
 
