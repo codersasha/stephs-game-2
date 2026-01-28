@@ -284,26 +284,25 @@ const GameLogic = {
     DIFFICULTY: {
         easy: {
             name: 'Easy',
-            description: 'More herbs available, more time',
-            herbCount: 8,
+            description: 'Simple sicknesses, all herbs available',
+            allowedSeverities: ['mild'],  // Only mild sicknesses
             wrongHerbsTolerated: 2,
-            timePerPatient: 60,
             patientsPerNight: 3
         },
         medium: {
             name: 'Medium',
-            description: 'Fewer herbs, less time',
-            herbCount: 6,
+            description: 'Moderate sicknesses, all herbs available',
+            allowedSeverities: ['mild', 'medium'],  // Mild and medium
+            preferSeverity: 'medium',  // Prefer medium sicknesses
             wrongHerbsTolerated: 1,
-            timePerPatient: 45,
             patientsPerNight: 4
         },
         hard: {
             name: 'Hard',
-            description: 'Limited herbs, strict timing',
-            herbCount: 5,
+            description: 'Serious sicknesses, all herbs available',
+            allowedSeverities: ['mild', 'medium', 'serious'],  // All types
+            preferSeverity: 'serious',  // Prefer serious sicknesses
             wrongHerbsTolerated: 0,
-            timePerPatient: 30,
             patientsPerNight: 5
         }
     },
@@ -332,42 +331,50 @@ const GameLogic = {
     },
 
     /**
-     * Generate random available herbs (what warriors brought)
+     * Generate available herbs - always ALL herbs so player must search
      */
     generateAvailableHerbs: function(state) {
+        // Always return ALL herbs - player must search through them
         const allHerbKeys = Object.keys(this.HERBS);
-        const shuffled = [...allHerbKeys].sort(() => Math.random() - 0.5);
-        const count = state.settings.herbCount;
-        
-        // Make sure we include at least one correct herb for the current patient
-        let selected = shuffled.slice(0, count);
-        
-        if (state.currentPatient) {
-            const correctHerbs = this.AILMENTS[state.currentPatient.ailment].correctHerbs;
-            const hasCorrect = selected.some(h => correctHerbs.includes(h));
-            
-            if (!hasCorrect) {
-                // Replace one random herb with a correct one
-                const correctHerb = correctHerbs[Math.floor(Math.random() * correctHerbs.length)];
-                selected[0] = correctHerb;
-            }
-        }
-        
-        return selected;
+        // Shuffle them so they're in a different order each time
+        return [...allHerbKeys].sort(() => Math.random() - 0.5);
     },
 
     /**
-     * Generate a new patient
+     * Generate a new patient based on difficulty
      */
-    generatePatient: function() {
-        const ailmentKeys = Object.keys(this.AILMENTS);
-        const ailmentKey = ailmentKeys[Math.floor(Math.random() * ailmentKeys.length)];
-        const ailment = this.AILMENTS[ailmentKey];
+    generatePatient: function(settings) {
+        const allowedSeverities = settings?.allowedSeverities || ['mild', 'medium', 'serious'];
+        const preferSeverity = settings?.preferSeverity || null;
+        
+        // Filter ailments by allowed severities
+        const ailmentKeys = Object.keys(this.AILMENTS).filter(key => {
+            return allowedSeverities.includes(this.AILMENTS[key].severity);
+        });
+        
+        let selectedAilmentKey;
+        
+        // If there's a preferred severity, 70% chance to pick from that severity
+        if (preferSeverity && Math.random() < 0.7) {
+            const preferredAilments = ailmentKeys.filter(key => 
+                this.AILMENTS[key].severity === preferSeverity
+            );
+            if (preferredAilments.length > 0) {
+                selectedAilmentKey = preferredAilments[Math.floor(Math.random() * preferredAilments.length)];
+            }
+        }
+        
+        // Otherwise pick randomly from allowed ailments
+        if (!selectedAilmentKey) {
+            selectedAilmentKey = ailmentKeys[Math.floor(Math.random() * ailmentKeys.length)];
+        }
+        
+        const ailment = this.AILMENTS[selectedAilmentKey];
         const name = this.CAT_NAMES[Math.floor(Math.random() * this.CAT_NAMES.length)];
         
         return {
             name: name,
-            ailment: ailmentKey,
+            ailment: selectedAilmentKey,
             ailmentData: ailment,
             arrived: Date.now()
         };

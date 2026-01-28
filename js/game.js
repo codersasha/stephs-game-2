@@ -388,8 +388,8 @@ const Game = {
     spawnNewPatient: function() {
         this.playSound('newpatient');
         
-        // Generate patient and herbs
-        this.state.currentPatient = GameLogic.generatePatient();
+        // Generate patient based on difficulty settings, and all herbs
+        this.state.currentPatient = GameLogic.generatePatient(this.state.settings);
         this.state.availableHerbs = GameLogic.generateAvailableHerbs(this.state);
         this.state.selectedHerbs = [];
 
