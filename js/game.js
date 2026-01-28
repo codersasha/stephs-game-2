@@ -36,7 +36,8 @@ const Game = {
             game: document.getElementById('game-screen'),
             rest: document.getElementById('rest-screen'),
             dream: document.getElementById('dream-screen'),
-            gameover: document.getElementById('gameover-screen')
+            gameover: document.getElementById('gameover-screen'),
+            starclan: document.getElementById('starclan-screen')
         };
 
         // Get game elements
@@ -101,6 +102,19 @@ const Game = {
             finalScore: document.getElementById('final-score'),
             finalHealed: document.getElementById('final-healed'),
             finalNights: document.getElementById('final-nights'),
+            joinStarclanBtn: document.getElementById('join-starclan-btn'),
+            starclanBackBtn: document.getElementById('starclan-back-btn'),
+            starclanPlayerName: document.getElementById('starclan-player-name'),
+            starclanAncestors: document.getElementById('starclan-ancestors'),
+            dreamVisitBtn: document.getElementById('dream-visit-btn'),
+            streamBtn: document.getElementById('stream-btn'),
+            portalBtn: document.getElementById('portal-btn'),
+            dreamVisitModal: document.getElementById('dream-visit-modal'),
+            dreamCatName: document.getElementById('dream-cat-name'),
+            dreamVisitClose: document.getElementById('dream-visit-close'),
+            streamModal: document.getElementById('stream-modal'),
+            visionText: document.getElementById('vision-text'),
+            streamClose: document.getElementById('stream-close'),
             // Invasion elements
             invasionModal: document.getElementById('invasion-modal'),
             invasionIcon: document.getElementById('invasion-icon'),
@@ -296,6 +310,53 @@ const Game = {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.deleteSaveSlot(parseInt(btn.dataset.slot));
+            });
+        });
+
+        // StarClan buttons
+        this.elements.joinStarclanBtn.addEventListener('click', () => {
+            this.playSound('starburst');
+            this.enterStarClan();
+        });
+
+        this.elements.starclanBackBtn.addEventListener('click', () => {
+            this.playSound('select');
+            this.showScreen('home');
+        });
+
+        this.elements.dreamVisitBtn.addEventListener('click', () => {
+            this.startDreamVisit();
+        });
+
+        this.elements.streamBtn.addEventListener('click', () => {
+            this.openStream();
+        });
+
+        this.elements.portalBtn.addEventListener('click', () => {
+            this.portalToNewLife();
+        });
+
+        this.elements.dreamVisitClose.addEventListener('click', () => {
+            this.elements.dreamVisitModal.classList.remove('active');
+            // Reset to step 1 for next time
+            this.showDreamStep(1);
+        });
+
+        this.elements.streamClose.addEventListener('click', () => {
+            this.elements.streamModal.classList.remove('active');
+        });
+
+        // Dream visit step 1: message choices
+        document.querySelectorAll('#message-choices .btn-dream-choice').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectDreamMessage(btn.dataset.msg, btn.textContent);
+            });
+        });
+
+        // Dream visit step 2: meaning choices
+        document.querySelectorAll('#meaning-choices .btn-dream-choice').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectDreamMeaning(btn.dataset.meaning, btn.textContent);
             });
         });
 
@@ -788,12 +849,59 @@ const Game = {
      * Enter the dream state when falling asleep
      */
     enterDream: function() {
-        // Check if StarClan sends a message (40% chance during sleep)
-        if (Math.random() < 0.4) {
-            this.showStarClanDream();
+        // StarClan only sends messages when something meaningful is about to happen
+        // Check if there's a prophecy-worthy event coming
+        const upcomingEvent = this.checkForUpcomingEvent();
+        
+        if (upcomingEvent) {
+            // StarClan has something important to share
+            this.showStarClanDream(upcomingEvent);
         } else {
             this.showPeacefulSleep();
         }
+    },
+
+    /**
+     * Check if there's an upcoming event worth a prophecy
+     * Returns the event type or null if nothing special
+     */
+    checkForUpcomingEvent: function() {
+        // Only ~15% chance of any prophecy, and only if something is happening
+        if (Math.random() > 0.15) {
+            return null;
+        }
+
+        // Possible meaningful events that could trigger prophecy
+        const possibleEvents = [];
+
+        // After many nights, higher chance of invasion warning
+        if (this.state.night > 3 && Math.random() < 0.3) {
+            possibleEvents.push('invasion');
+        }
+
+        // If reputation is dropping, warning about trust
+        if (this.state.reputation < 60) {
+            possibleEvents.push('trust');
+        }
+
+        // Random chance of other prophecies
+        if (Math.random() < 0.2) {
+            possibleEvents.push('hope');
+        }
+        if (Math.random() < 0.15) {
+            possibleEvents.push('change');
+        }
+        if (Math.random() < 0.1) {
+            possibleEvents.push('stranger');
+        }
+
+        // If no events, return null (peaceful sleep)
+        if (possibleEvents.length === 0) {
+            return null;
+        }
+
+        // Pick a random event from the possible ones
+        return possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
     },
 
     /**
@@ -814,10 +922,69 @@ const Game = {
     },
 
     /**
+     * Get a prophecy based on upcoming event
+     */
+    getProphecyForEvent: function(eventType) {
+        const prophecies = {
+            invasion: {
+                senders: ['Bluestar', 'Firestar', 'Tallstar'],
+                messages: [
+                    "Blood will stain the forest floor before the next full moon...",
+                    "Claws sharpen in the shadows. Be ready, young one.",
+                    "The border will run red. Prepare your Clan.",
+                    "Enemies gather where the two rivers meet..."
+                ]
+            },
+            trust: {
+                senders: ['Yellowfang', 'Cinderpelt', 'Spottedleaf'],
+                messages: [
+                    "A medicine cat's greatest herb is trust. Nurture it well.",
+                    "Your path wavers. Remember why you chose to heal.",
+                    "The Clan watches you. Show them your heart is true.",
+                    "Doubt clouds the minds of warriors. Prove your worth."
+                ]
+            },
+            hope: {
+                senders: ['Spottedleaf', 'Feathertail', 'Silverstream'],
+                messages: [
+                    "New life will bring joy when the leaf-bare ends.",
+                    "Light shines brightest after the darkest night.",
+                    "A kit born under stars will bring great things.",
+                    "Hope blooms where you least expect it."
+                ]
+            },
+            change: {
+                senders: ['Bluestar', 'Crookedstar', 'Leopardstar'],
+                messages: [
+                    "The old ways must bend, or they will break.",
+                    "Change comes on swift paws. Embrace it.",
+                    "What was will not always be. Prepare for the new.",
+                    "The forest shifts. So must you."
+                ]
+            },
+            stranger: {
+                senders: ['Firestar', 'Cloudstar', 'Skywatcher'],
+                messages: [
+                    "A stranger walks toward your borders with secrets to tell.",
+                    "Not all who wander are lost. Welcome the traveler.",
+                    "Eyes from beyond the territories seek your Clan.",
+                    "One from far away brings news of distant lands."
+                ]
+            }
+        };
+
+        const eventProphecy = prophecies[eventType] || prophecies.hope;
+        const sender = eventProphecy.senders[Math.floor(Math.random() * eventProphecy.senders.length)];
+        const message = eventProphecy.messages[Math.floor(Math.random() * eventProphecy.messages.length)];
+
+        return { sender, message, eventType };
+    },
+
+    /**
      * Show StarClan message during dream
      */
-    showStarClanDream: function() {
-        const prophecy = GameLogic.getStarClanMessage();
+    showStarClanDream: function(eventType) {
+        const prophecy = this.getProphecyForEvent(eventType);
         
         this.elements.dreamContent.innerHTML = `
             <div class="dream-starclan">
@@ -1319,6 +1486,227 @@ const Game = {
         };
         
         GameLogic.saveToStorage(`saveSlot${this.currentSaveSlot}`, saveData);
+    },
+
+    // ==================== STARCLAN AFTERLIFE ====================
+
+    /**
+     * Enter StarClan after death
+     */
+    enterStarClan: function() {
+        // Show player's StarClan name (with full warrior suffix now)
+        this.elements.starclanPlayerName.textContent = this.fullWarriorName || this.playerName;
+        
+        // Add ancestor cats
+        this.populateAncestors();
+        
+        this.showScreen('starclan');
+    },
+
+    /**
+     * Populate StarClan with ancestor spirits
+     */
+    populateAncestors: function() {
+        const ancestors = ['😺', '🐱', '😸', '🐈', '😻'];
+        const names = ['Bluestar', 'Yellowfang', 'Firestar', 'Spottedleaf', 'Cinderpelt'];
+        
+        this.elements.starclanAncestors.innerHTML = ancestors.map((cat, i) => `
+            <div class="ancestor-cat" title="${names[i]}">${cat}</div>
+        `).join('');
+    },
+
+    // Dream visit state
+    dreamVisitData: {
+        message: '',
+        messageText: '',
+        meaning: '',
+        meaningText: '',
+        targetCat: '',
+        targetRole: ''
+    },
+
+    /**
+     * Start a dream visit to a living cat
+     */
+    startDreamVisit: function() {
+        // Reset to step 1
+        this.dreamVisitData = { message: '', messageText: '', meaning: '', meaningText: '', targetCat: '', targetRole: '' };
+        this.showDreamStep(1);
+        this.playSound('starburst');
+        this.elements.dreamVisitModal.classList.add('active');
+    },
+
+    /**
+     * Show a specific dream step
+     */
+    showDreamStep: function(step) {
+        document.querySelectorAll('.dream-step').forEach(s => s.classList.remove('active'));
+        document.getElementById(`dream-step-${step}`).classList.add('active');
+    },
+
+    /**
+     * Step 1: Select the message/prophecy words
+     */
+    selectDreamMessage: function(msgKey, msgText) {
+        this.dreamVisitData.message = msgKey;
+        this.dreamVisitData.messageText = msgText;
+        
+        // Show in step 2
+        document.getElementById('selected-message').textContent = msgText;
+        
+        this.playSound('select');
+        this.showDreamStep(2);
+    },
+
+    /**
+     * Step 2: Select the meaning
+     */
+    selectDreamMeaning: function(meaningKey, meaningText) {
+        this.dreamVisitData.meaning = meaningKey;
+        this.dreamVisitData.meaningText = meaningText;
+        
+        // Show full message in step 3
+        document.getElementById('selected-full-msg').textContent = 
+            `${this.dreamVisitData.messageText} (${meaningText})`;
+        
+        // Populate cat choices
+        this.populateDreamCatChoices();
+        
+        this.playSound('select');
+        this.showDreamStep(3);
+    },
+
+    /**
+     * Populate the cat choices for dream visit
+     */
+    populateDreamCatChoices: function() {
+        const cats = [
+            { name: 'Bramblestar', role: 'Leader', icon: '🦁' },
+            { name: 'Squirrelflight', role: 'Deputy', icon: '🐱' },
+            { name: 'Jayfeather', role: 'Medicine Cat', icon: '😺' },
+            { name: 'Lionblaze', role: 'Warrior', icon: '🦊' },
+            { name: 'Dovewing', role: 'Warrior', icon: '🐈' },
+            { name: 'Ivypool', role: 'Warrior', icon: '😸' },
+            { name: 'Alderheart', role: 'Medicine Cat', icon: '🐱' },
+            { name: 'Sparkpelt', role: 'Warrior', icon: '😻' }
+        ];
+
+        const container = document.getElementById('cat-choices');
+        container.innerHTML = cats.map(cat => `
+            <button class="cat-choice-btn" data-cat="${cat.name}" data-role="${cat.role}">
+                <span class="cat-choice-icon">${cat.icon}</span>
+                <span class="cat-choice-name">${cat.name}</span>
+                <span class="cat-choice-role">${cat.role}</span>
+            </button>
+        `).join('');
+
+        // Add click listeners
+        container.querySelectorAll('.cat-choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.selectDreamCat(btn.dataset.cat, btn.dataset.role);
+            });
+        });
+    },
+
+    /**
+     * Step 3: Select which cat receives the dream
+     */
+    selectDreamCat: function(catName, catRole) {
+        this.dreamVisitData.targetCat = catName;
+        this.dreamVisitData.targetRole = catRole;
+        
+        // Show delivery
+        this.deliverDream();
+    },
+
+    /**
+     * Deliver the dream to the chosen cat
+     */
+    deliverDream: function() {
+        const { messageText, meaningText, targetCat, targetRole } = this.dreamVisitData;
+        
+        this.elements.dreamCatName.textContent = targetCat;
+        document.getElementById('your-message').textContent = messageText;
+        
+        // Generate reaction based on meaning and role
+        const reactions = {
+            danger: [
+                `${targetCat} wakes with a start, fur bristling. "I must warn the Clan!"`,
+                `The ${targetRole.toLowerCase()}'s eyes widen. "StarClan... I will be vigilant."`,
+                `${targetCat} nods solemnly. "I understand. We must prepare."`
+            ],
+            hope: [
+                `${targetCat}'s eyes shimmer with tears of joy. "Thank you, StarClan!"`,
+                `A warm smile spreads across ${targetCat}'s face. "This gives me strength."`,
+                `The ${targetRole.toLowerCase()} purrs softly. "I will hold onto this hope."`
+            ],
+            betrayal: [
+                `${targetCat} looks troubled. "Who would betray us...?"`,
+                `The ${targetRole.toLowerCase()}'s ears flatten. "I will watch carefully."`,
+                `${targetCat} hisses softly. "I won't let this happen."`
+            ],
+            hero: [
+                `${targetCat} stands taller. "Could it be... me?"`,
+                `The ${targetRole.toLowerCase()} looks determined. "I will do what I must."`,
+                `${targetCat}'s eyes glow with purpose. "I am ready."`
+            ],
+            journey: [
+                `${targetCat} gazes toward the horizon. "Where must I go?"`,
+                `The ${targetRole.toLowerCase()} nods. "I will follow the path StarClan shows."`,
+                `${targetCat} stretches, ready for adventure. "I will find the way."`
+            ],
+            secret: [
+                `${targetCat}'s ears prick up. "What secret? Tell me more!"`,
+                `The ${targetRole.toLowerCase()} looks curious. "The truth will come out..."`,
+                `${targetCat} narrows their eyes. "I will uncover it."`
+            ]
+        };
+        
+        const meaningReactions = reactions[this.dreamVisitData.meaning] || reactions.hope;
+        const reaction = meaningReactions[Math.floor(Math.random() * meaningReactions.length)];
+        
+        document.getElementById('cat-reaction').textContent = reaction;
+        
+        this.playSound('success');
+        this.showDreamStep(4);
+    },
+
+    /**
+     * Open the Pool of Stars stream
+     */
+    openStream: function() {
+        const visions = [
+            "You see your old Clan... they are thriving.",
+            "A young kit plays where you once walked...",
+            "The medicine den has a new cat now, learning the herbs.",
+            "Warriors patrol the borders, keeping the Clan safe.",
+            "A new leader receives their nine lives at the Moonpool...",
+            "Kits are being born in the nursery. Life continues.",
+            "The forest changes with the seasons, but the Clan endures.",
+            "Your apprentice has become a skilled medicine cat."
+        ];
+        
+        const vision = visions[Math.floor(Math.random() * visions.length)];
+        this.elements.visionText.textContent = vision;
+        
+        this.playSound('starburst');
+        this.elements.streamModal.classList.add('active');
+    },
+
+    /**
+     * Portal to a new life (restart game)
+     */
+    portalToNewLife: function() {
+        this.playSound('success');
+        
+        // Delete current save if exists
+        if (this.currentSaveSlot) {
+            localStorage.removeItem(`saveSlot${this.currentSaveSlot}`);
+        }
+        
+        // Go to save selection for new life
+        this.loadSaveSlots();
+        this.showScreen('saves');
     }
 };
 

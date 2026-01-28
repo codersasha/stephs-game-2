@@ -19,12 +19,18 @@
                 <p class="tagline">Heal your Clanmates with the power of herbs</p>
             </div>
             <div class="home-buttons">
-                <button id="learn-btn" class="btn btn-learn">
-                    📚 Learn to be a Medicine Cat
-                </button>
-                <button id="play-btn" class="btn btn-play">
-                    ✨ Play Game ✨
-                </button>
+                <div class="home-choices">
+                    <button id="learn-btn" class="btn btn-learn">
+                        <span class="choice-icon">📚</span>
+                        <span class="choice-title">Train First</span>
+                        <span class="choice-desc">Learn herbs with Healingheart</span>
+                    </button>
+                    <button id="play-btn" class="btn btn-play">
+                        <span class="choice-icon">💊</span>
+                        <span class="choice-title">Start Healing</span>
+                        <span class="choice-desc">Jump straight into medicine</span>
+                    </button>
+                </div>
             </div>
             <p class="hint-text">Try clicking the stars above...</p>
             <div class="leaf-decorations">
@@ -460,9 +466,118 @@
                     <p><span class="stat-icon">💚</span> Cats Healed: <span id="final-healed">0</span></p>
                     <p><span class="stat-icon">🌙</span> Nights Survived: <span id="final-nights">0</span></p>
                 </div>
-                <button id="play-again-btn" class="btn btn-primary">
-                    🔄 Try Again
+                <button id="join-starclan-btn" class="btn btn-starclan">
+                    ⭐ Join StarClan ⭐
                 </button>
+            </div>
+        </div>
+
+        <!-- StarClan Afterlife Screen -->
+        <div id="starclan-screen" class="screen">
+            <div class="starclan-sky"></div>
+            <button id="starclan-back-btn" class="starclan-back-btn">← Back</button>
+            <div class="starclan-forest">
+                <div class="starclan-trees"></div>
+                <div class="starclan-ancestors" id="starclan-ancestors">
+                    <!-- Ancestor cats will be added here -->
+                </div>
+            </div>
+            <div class="starclan-content">
+                <h1>✨ Welcome to StarClan ✨</h1>
+                <p class="starclan-welcome">You walk among the stars now, <span id="starclan-player-name">young one</span>.</p>
+                <p class="starclan-desc">The spirits of your ancestors surround you in this eternal hunting ground.</p>
+                <div class="starclan-options">
+                    <button class="btn btn-starclan-option" id="dream-visit-btn">
+                        <span class="option-icon">💭</span>
+                        <span class="option-name">Dream Visit</span>
+                        <span class="option-desc">Visit a living cat in their dreams</span>
+                    </button>
+                    <button class="btn btn-starclan-option" id="stream-btn">
+                        <span class="option-icon">🌊</span>
+                        <span class="option-name">The Stream</span>
+                        <span class="option-desc">Gaze into the Pool of Stars</span>
+                    </button>
+                    <button class="btn btn-starclan-option" id="portal-btn">
+                        <span class="option-icon">🌀</span>
+                        <span class="option-name">Portal to New Life</span>
+                        <span class="option-desc">Be reborn as a new cat</span>
+                    </button>
+                </div>
+            </div>
+            <div class="floating-stars">
+                <span>⭐</span><span>✨</span><span>💫</span><span>🌟</span><span>⭐</span>
+                <span>✨</span><span>💫</span><span>🌟</span><span>⭐</span><span>✨</span>
+            </div>
+        </div>
+
+        <!-- Dream Visit Modal - Step 1: Choose Message -->
+        <div id="dream-visit-modal" class="modal">
+            <div class="modal-content starclan-modal dream-modal-wide">
+                <h2>💭 Dream Visit</h2>
+                
+                <!-- Step 1: Choose Words -->
+                <div id="dream-step-1" class="dream-step active">
+                    <p class="step-label">Step 1: What will you say?</p>
+                    <div class="dream-choices" id="message-choices">
+                        <button class="btn btn-dream-choice" data-msg="darkness">"Darkness rises on the horizon..."</button>
+                        <button class="btn btn-dream-choice" data-msg="light">"A light shines in the shadows..."</button>
+                        <button class="btn btn-dream-choice" data-msg="water">"When water meets fire, peace will come..."</button>
+                        <button class="btn btn-dream-choice" data-msg="storm">"A storm gathers, but hope remains..."</button>
+                        <button class="btn btn-dream-choice" data-msg="stars">"Follow the path of stars..."</button>
+                        <button class="btn btn-dream-choice" data-msg="blood">"Blood will spill before the moon is full..."</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Choose Meaning -->
+                <div id="dream-step-2" class="dream-step">
+                    <p class="step-label">Step 2: What does it mean?</p>
+                    <p class="selected-message" id="selected-message"></p>
+                    <div class="dream-choices" id="meaning-choices">
+                        <button class="btn btn-dream-choice" data-meaning="danger">"Danger is coming to the Clan"</button>
+                        <button class="btn btn-dream-choice" data-meaning="hope">"Good times are ahead"</button>
+                        <button class="btn btn-dream-choice" data-meaning="betrayal">"Someone will betray the Clan"</button>
+                        <button class="btn btn-dream-choice" data-meaning="hero">"A hero will rise"</button>
+                        <button class="btn btn-dream-choice" data-meaning="journey">"A journey must be taken"</button>
+                        <button class="btn btn-dream-choice" data-meaning="secret">"A secret will be revealed"</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Choose Cat -->
+                <div id="dream-step-3" class="dream-step">
+                    <p class="step-label">Step 3: Who will receive this dream?</p>
+                    <p class="selected-message" id="selected-full-msg"></p>
+                    <div class="dream-choices cat-choices" id="cat-choices">
+                        <!-- Cats will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Step 4: Delivery -->
+                <div id="dream-step-4" class="dream-step">
+                    <div class="dream-delivery">
+                        <p class="delivery-intro">You enter the dreams of...</p>
+                        <p class="dream-cat-name" id="dream-cat-name">Fernpaw</p>
+                        <div class="dream-scene">
+                            <p class="your-message" id="your-message"></p>
+                        </div>
+                        <p class="cat-reaction" id="cat-reaction"></p>
+                    </div>
+                    <button id="dream-visit-close" class="btn btn-primary">Return to StarClan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stream/Pool Modal -->
+        <div id="stream-modal" class="modal">
+            <div class="modal-content starclan-modal">
+                <h2>🌊 The Pool of Stars</h2>
+                <p>You gaze into the shimmering waters...</p>
+                <div class="pool-vision" id="pool-vision">
+                    <div class="pool-water">
+                        <span class="ripple">〰️</span>
+                    </div>
+                    <p class="vision-text" id="vision-text">The water shows you a vision of the living world...</p>
+                </div>
+                <button id="stream-close" class="btn btn-primary">Step back</button>
             </div>
         </div>
     </div>
