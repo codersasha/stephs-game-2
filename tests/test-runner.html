@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Tests</title>
+    <title>Medicine Cat Tests</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
             margin: 40px auto;
             padding: 20px;
-            background: #1a1a2e;
+            background: #1e3d1e;
             color: white;
         }
         h1 {
@@ -23,7 +23,7 @@
         }
         .pass {
             background: #2d5a2d;
-            border-left: 4px solid #4caf50;
+            border-left: 4px solid #98d8aa;
         }
         .fail {
             background: #5a2d2d;
@@ -32,7 +32,7 @@
         .summary {
             margin-top: 20px;
             padding: 15px;
-            background: #16213e;
+            background: rgba(0,0,0,0.3);
             border-radius: 10px;
             font-size: 1.2em;
         }
@@ -43,7 +43,7 @@
     </style>
 </head>
 <body>
-    <h1>🧪 Game Logic Tests</h1>
+    <h1>🐱 Medicine Cat Tests</h1>
     <div id="results"></div>
     <div id="summary" class="summary"></div>
 
@@ -71,87 +71,130 @@
         }
 
         function assert(condition, message) {
-            if (!condition) {
-                throw new Error(message || 'Assertion failed');
-            }
+            if (!condition) throw new Error(message || 'Assertion failed');
         }
 
         function assertEqual(actual, expected, message) {
-            if (actual !== expected) {
-                throw new Error(message || `Expected ${expected} but got ${actual}`);
-            }
+            if (actual !== expected) throw new Error(message || `Expected ${expected} but got ${actual}`);
         }
 
-        // Tests
-        test('createInitialState returns correct initial values', () => {
-            const state = GameLogic.createInitialState();
+        // Tests for GameLogic
+        test('HERBS contains expected herbs', () => {
+            assert(GameLogic.HERBS.cobwebs, 'Should have cobwebs');
+            assert(GameLogic.HERBS.catmint, 'Should have catmint');
+            assert(GameLogic.HERBS.marigold, 'Should have marigold');
+            assert(Object.keys(GameLogic.HERBS).length >= 10, 'Should have at least 10 herbs');
+        });
+
+        test('AILMENTS contains expected ailments', () => {
+            assert(GameLogic.AILMENTS.greencough, 'Should have greencough');
+            assert(GameLogic.AILMENTS.wounds, 'Should have wounds');
+            assert(GameLogic.AILMENTS.greencough.correctHerbs.includes('catmint'), 'Catmint should cure greencough');
+        });
+
+        test('createInitialState returns correct values', () => {
+            const state = GameLogic.createInitialState('easy');
+            assertEqual(state.difficulty, 'easy');
             assertEqual(state.score, 0);
-            assertEqual(state.level, 1);
-            assertEqual(state.lives, 3);
-            assertEqual(state.isPlaying, false);
+            assertEqual(state.catsHealed, 0);
+            assertEqual(state.reputation, 100);
+            assertEqual(state.night, 1);
         });
 
-        test('addScore increases score correctly', () => {
-            let state = GameLogic.createInitialState();
-            state = GameLogic.addScore(state, 100);
-            assertEqual(state.score, 100);
+        test('createInitialState respects difficulty', () => {
+            const easyState = GameLogic.createInitialState('easy');
+            const hardState = GameLogic.createInitialState('hard');
+            assert(easyState.settings.herbCount > hardState.settings.herbCount, 'Easy should have more herbs');
         });
 
-        test('addScore updates high score', () => {
-            let state = GameLogic.createInitialState();
-            state = GameLogic.addScore(state, 500);
-            assertEqual(state.highScore, 500);
+        test('generatePatient returns valid patient', () => {
+            const patient = GameLogic.generatePatient();
+            assert(patient.name, 'Patient should have a name');
+            assert(patient.ailment, 'Patient should have an ailment');
+            assert(GameLogic.AILMENTS[patient.ailment], 'Ailment should be valid');
         });
 
-        test('loseLife decreases lives', () => {
-            let state = GameLogic.createInitialState();
-            state = GameLogic.loseLife(state);
-            assertEqual(state.lives, 2);
+        test('generateAvailableHerbs returns correct count', () => {
+            let state = GameLogic.createInitialState('easy');
+            state.currentPatient = GameLogic.generatePatient();
+            const herbs = GameLogic.generateAvailableHerbs(state);
+            assertEqual(herbs.length, state.settings.herbCount);
         });
 
-        test('loseLife stops game when no lives left', () => {
-            let state = GameLogic.createInitialState();
-            state.lives = 1;
-            state.isPlaying = true;
-            state = GameLogic.loseLife(state);
-            assertEqual(state.lives, 0);
-            assertEqual(state.isPlaying, false);
+        test('toggleHerbSelection adds herb', () => {
+            let state = GameLogic.createInitialState('easy');
+            state = GameLogic.toggleHerbSelection(state, 'cobwebs');
+            assert(state.selectedHerbs.includes('cobwebs'), 'Should add cobwebs');
         });
 
-        test('isGameOver returns true when lives are 0', () => {
-            let state = GameLogic.createInitialState();
-            state.lives = 0;
-            assert(GameLogic.isGameOver(state));
+        test('toggleHerbSelection removes herb when selected again', () => {
+            let state = GameLogic.createInitialState('easy');
+            state = GameLogic.toggleHerbSelection(state, 'cobwebs');
+            state = GameLogic.toggleHerbSelection(state, 'cobwebs');
+            assert(!state.selectedHerbs.includes('cobwebs'), 'Should remove cobwebs');
         });
 
-        test('isGameOver returns false when lives remain', () => {
-            let state = GameLogic.createInitialState();
-            assert(!GameLogic.isGameOver(state));
+        test('toggleHerbSelection limits to 3 herbs', () => {
+            let state = GameLogic.createInitialState('easy');
+            state = GameLogic.toggleHerbSelection(state, 'cobwebs');
+            state = GameLogic.toggleHerbSelection(state, 'marigold');
+            state = GameLogic.toggleHerbSelection(state, 'catmint');
+            state = GameLogic.toggleHerbSelection(state, 'honey');
+            assertEqual(state.selectedHerbs.length, 3, 'Should max at 3 herbs');
         });
 
-        test('nextLevel increases level', () => {
-            let state = GameLogic.createInitialState();
-            state = GameLogic.nextLevel(state);
-            assertEqual(state.level, 2);
+        test('evaluateTreatment succeeds with correct herbs', () => {
+            let state = GameLogic.createInitialState('easy');
+            state.currentPatient = { name: 'Test', ailment: 'greencough' };
+            state.selectedHerbs = ['catmint']; // catmint cures greencough
+            const result = GameLogic.evaluateTreatment(state);
+            assert(result.success, 'Treatment should succeed');
         });
 
-        test('generateGameCode returns valid format', () => {
-            const code = GameLogic.generateGameCode();
-            assert(code.length > 8, 'Code should be at least 8 characters');
-            assert(/^[A-Z]+\d{4}$/.test(code), 'Code should be WORD + 4 digits');
+        test('evaluateTreatment fails with wrong herbs', () => {
+            let state = GameLogic.createInitialState('hard');
+            state.currentPatient = { name: 'Test', ailment: 'greencough' };
+            state.selectedHerbs = ['dock', 'thyme']; // neither helps greencough
+            const result = GameLogic.evaluateTreatment(state);
+            assert(!result.success, 'Treatment should fail');
         });
 
-        test('generateGameCode returns different codes', () => {
-            const codes = new Set();
-            for (let i = 0; i < 10; i++) {
-                codes.add(GameLogic.generateGameCode());
-            }
-            assert(codes.size > 1, 'Should generate different codes');
+        test('applyTreatment updates score on success', () => {
+            let state = GameLogic.createInitialState('easy');
+            state.currentPatient = { name: 'Test', ailment: 'greencough' };
+            const result = { success: true, correctCount: 1, wrongCount: 0 };
+            state = GameLogic.applyTreatment(state, result);
+            assert(state.score > 0, 'Score should increase');
+            assertEqual(state.catsHealed, 1, 'Cats healed should increase');
+        });
+
+        test('applyTreatment decreases reputation on failure', () => {
+            let state = GameLogic.createInitialState('easy');
+            state.currentPatient = { name: 'Test', ailment: 'greencough' };
+            const result = { success: false, correctCount: 0, wrongCount: 2 };
+            state = GameLogic.applyTreatment(state, result);
+            assert(state.reputation < 100, 'Reputation should decrease');
+            assertEqual(state.catsLost, 1, 'Cats lost should increase');
+        });
+
+        test('startNewNight resets night counters', () => {
+            let state = GameLogic.createInitialState('easy');
+            state.patientsTonight = 3;
+            state.isResting = true;
+            state = GameLogic.startNewNight(state);
+            assertEqual(state.patientsTonight, 0);
+            assertEqual(state.isResting, false);
+            assertEqual(state.night, 2);
+        });
+
+        test('CAT_NAMES contains warrior cat names', () => {
+            assert(GameLogic.CAT_NAMES.length >= 20, 'Should have many cat names');
+            assert(GameLogic.CAT_NAMES.includes('Firestar'), 'Should include Firestar');
         });
 
         // Summary
         const total = passed + failed;
-        const emoji = failed === 0 ? '🎉' : '😢';
+        const emoji = failed === 0 ? '🎉' : '😿';
         summary.innerHTML = `${emoji} <strong>${passed}/${total}</strong> tests passed`;
     </script>
 </body>

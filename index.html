@@ -3,38 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Awesome Game</title>
+    <title>Warrior Cat: Two Medicine Cats</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div id="game-container">
         <!-- Home Screen -->
         <div id="home-screen" class="screen active">
-            <div class="stars"></div>
+            <div class="forest-bg"></div>
             <div class="title-container">
-                <h1 class="game-title">Awesome Game</h1>
-                <p class="subtitle">An Amazing Adventure Awaits!</p>
+                <div class="cat-icon">🐱</div>
+                <h1 class="game-title">Warrior Cat</h1>
+                <h2 class="game-subtitle">Two Medicine Cats</h2>
+                <p class="tagline">Heal your Clanmates with the power of herbs</p>
             </div>
             <div class="start-prompt">
-                <p>Press Any Button to Start</p>
-                <div class="pulse-ring"></div>
+                <p>Tap anywhere to begin your journey</p>
             </div>
-            <div class="decorations">
-                <svg class="decoration star" viewBox="0 0 100 100">
-                    <polygon points="50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40" fill="currentColor"/>
-                </svg>
-                <svg class="decoration star" viewBox="0 0 100 100">
-                    <polygon points="50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40" fill="currentColor"/>
-                </svg>
-                <svg class="decoration star" viewBox="0 0 100 100">
-                    <polygon points="50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40" fill="currentColor"/>
-                </svg>
+            <div class="leaf-decorations">
+                <span class="leaf">🍃</span>
+                <span class="leaf">🌿</span>
+                <span class="leaf">🍂</span>
             </div>
         </div>
 
-        <!-- Game Screen (placeholder) -->
+        <!-- Difficulty Selection -->
+        <div id="difficulty-screen" class="screen">
+            <div class="forest-bg"></div>
+            <h1>Choose Your Path</h1>
+            <p class="difficulty-intro">How challenging should your medicine cat training be?</p>
+            <div class="difficulty-buttons">
+                <button class="btn btn-difficulty" data-difficulty="easy">
+                    <span class="diff-icon">🌸</span>
+                    <span class="diff-name">Easy</span>
+                    <span class="diff-desc">More herbs, more time to think</span>
+                </button>
+                <button class="btn btn-difficulty" data-difficulty="medium">
+                    <span class="diff-icon">🌿</span>
+                    <span class="diff-name">Medium</span>
+                    <span class="diff-desc">Fewer herbs, less time</span>
+                </button>
+                <button class="btn btn-difficulty" data-difficulty="hard">
+                    <span class="diff-icon">🌑</span>
+                    <span class="diff-name">Hard</span>
+                    <span class="diff-desc">Limited herbs, no mistakes allowed</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Game Screen -->
         <div id="game-screen" class="screen">
-            <h2>Game Loading...</h2>
+            <div class="game-header">
+                <div class="stat">
+                    <span class="stat-icon">🌙</span>
+                    <span class="stat-label">Night</span>
+                    <span id="night-count" class="stat-value">1</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">⭐</span>
+                    <span class="stat-label">Score</span>
+                    <span id="score-count" class="stat-value">0</span>
+                </div>
+                <div class="stat reputation-stat">
+                    <span class="stat-icon">❤️</span>
+                    <span class="stat-label">Reputation</span>
+                    <div class="reputation-bar">
+                        <div id="reputation-fill" class="reputation-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="patient-area">
+                <div id="patient-card" class="patient-card">
+                    <div class="patient-icon" id="patient-icon">🐱</div>
+                    <h2 id="patient-name">Waiting for patient...</h2>
+                    <p id="patient-ailment" class="ailment-text"></p>
+                </div>
+            </div>
+
+            <div class="treatment-area">
+                <h3>Selected Herbs <span id="herb-count">(0/3)</span></h3>
+                <div id="selected-herbs" class="selected-herbs">
+                    <p class="empty-selection">Tap herbs below to select them</p>
+                </div>
+                <button id="treat-btn" class="btn btn-treat" disabled>
+                    🌿 Give Treatment
+                </button>
+            </div>
+
+            <div class="herb-area">
+                <h3>Available Herbs</h3>
+                <p class="herb-subtitle">Warriors brought these herbs today</p>
+                <div id="herb-grid" class="herb-grid">
+                    <!-- Herbs will be added here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Rest Screen (between nights) -->
+        <div id="rest-screen" class="screen">
+            <div class="night-sky"></div>
+            <div class="rest-content">
+                <h1>🌙 Time to Rest</h1>
+                <p class="rest-summary">You've treated all patients for tonight.</p>
+                <div class="night-stats">
+                    <div class="night-stat">
+                        <span class="stat-icon">💚</span>
+                        <span id="cats-healed">0</span> cats healed
+                    </div>
+                    <div class="night-stat">
+                        <span class="stat-icon">💔</span>
+                        <span id="cats-lost">0</span> cats lost
+                    </div>
+                </div>
+                <p class="rest-message" id="rest-message">Get some sleep, medicine cat. Tomorrow brings new challenges.</p>
+                <button id="next-night-btn" class="btn btn-primary">
+                    ☀️ Start Next Night
+                </button>
+            </div>
+            <div class="stars-container">
+                <span class="star">✨</span>
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+            </div>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="result-modal" class="modal">
+            <div class="modal-content">
+                <div id="result-icon" class="result-icon">💚</div>
+                <h2 id="result-title">Treatment Result</h2>
+                <p id="result-message"></p>
+                <div id="result-details" class="result-details"></div>
+                <button id="continue-btn" class="btn btn-primary">Continue</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameover-screen" class="screen">
+            <div class="gameover-content">
+                <h1>😿 Game Over</h1>
+                <p>Your reputation as a medicine cat has fallen too low.</p>
+                <p>The Clan no longer trusts you to heal them.</p>
+                <div class="final-stats">
+                    <p><span class="stat-icon">⭐</span> Final Score: <span id="final-score">0</span></p>
+                    <p><span class="stat-icon">💚</span> Cats Healed: <span id="final-healed">0</span></p>
+                    <p><span class="stat-icon">🌙</span> Nights Survived: <span id="final-nights">0</span></p>
+                </div>
+                <button id="play-again-btn" class="btn btn-primary">
+                    🔄 Try Again
+                </button>
+            </div>
         </div>
     </div>
 
