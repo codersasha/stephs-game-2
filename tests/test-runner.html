@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        h1 {
+            color: #ffd700;
+        }
+        .test {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .pass {
+            background: #2d5a2d;
+            border-left: 4px solid #4caf50;
+        }
+        .fail {
+            background: #5a2d2d;
+            border-left: 4px solid #f44336;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #16213e;
+            border-radius: 10px;
+            font-size: 1.2em;
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Game Logic Tests</h1>
+    <div id="results"></div>
+    <div id="summary" class="summary"></div>
+
+    <script src="../js/game-logic.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        const summary = document.getElementById('summary');
+        let passed = 0;
+        let failed = 0;
+
+        function test(name, fn) {
+            const div = document.createElement('div');
+            div.className = 'test';
+            try {
+                fn();
+                div.className += ' pass';
+                div.innerHTML = `<span class="emoji">✅</span> ${name}`;
+                passed++;
+            } catch (error) {
+                div.className += ' fail';
+                div.innerHTML = `<span class="emoji">❌</span> ${name}<br><small>${error.message}</small>`;
+                failed++;
+            }
+            results.appendChild(div);
+        }
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(message || `Expected ${expected} but got ${actual}`);
+            }
+        }
+
+        // Tests
+        test('createInitialState returns correct initial values', () => {
+            const state = GameLogic.createInitialState();
+            assertEqual(state.score, 0);
+            assertEqual(state.level, 1);
+            assertEqual(state.lives, 3);
+            assertEqual(state.isPlaying, false);
+        });
+
+        test('addScore increases score correctly', () => {
+            let state = GameLogic.createInitialState();
+            state = GameLogic.addScore(state, 100);
+            assertEqual(state.score, 100);
+        });
+
+        test('addScore updates high score', () => {
+            let state = GameLogic.createInitialState();
+            state = GameLogic.addScore(state, 500);
+            assertEqual(state.highScore, 500);
+        });
+
+        test('loseLife decreases lives', () => {
+            let state = GameLogic.createInitialState();
+            state = GameLogic.loseLife(state);
+            assertEqual(state.lives, 2);
+        });
+
+        test('loseLife stops game when no lives left', () => {
+            let state = GameLogic.createInitialState();
+            state.lives = 1;
+            state.isPlaying = true;
+            state = GameLogic.loseLife(state);
+            assertEqual(state.lives, 0);
+            assertEqual(state.isPlaying, false);
+        });
+
+        test('isGameOver returns true when lives are 0', () => {
+            let state = GameLogic.createInitialState();
+            state.lives = 0;
+            assert(GameLogic.isGameOver(state));
+        });
+
+        test('isGameOver returns false when lives remain', () => {
+            let state = GameLogic.createInitialState();
+            assert(!GameLogic.isGameOver(state));
+        });
+
+        test('nextLevel increases level', () => {
+            let state = GameLogic.createInitialState();
+            state = GameLogic.nextLevel(state);
+            assertEqual(state.level, 2);
+        });
+
+        test('generateGameCode returns valid format', () => {
+            const code = GameLogic.generateGameCode();
+            assert(code.length > 8, 'Code should be at least 8 characters');
+            assert(/^[A-Z]+\d{4}$/.test(code), 'Code should be WORD + 4 digits');
+        });
+
+        test('generateGameCode returns different codes', () => {
+            const codes = new Set();
+            for (let i = 0; i < 10; i++) {
+                codes.add(GameLogic.generateGameCode());
+            }
+            assert(codes.size > 1, 'Should generate different codes');
+        });
+
+        // Summary
+        const total = passed + failed;
+        const emoji = failed === 0 ? '🎉' : '😢';
+        summary.innerHTML = `${emoji} <strong>${passed}/${total}</strong> tests passed`;
+    </script>
+</body>
+</html>
