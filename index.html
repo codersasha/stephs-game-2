@@ -42,6 +42,36 @@
                         <input type="text" id="name-prefix" placeholder="Fire, Silver, Leaf..." maxlength="12" autocomplete="off">
                     </div>
                     
+                    <div class="cat-customize-section">
+                        <label>Customize your cat:</label>
+                        <div class="customize-row">
+                            <div class="customize-group">
+                                <span class="customize-label">Fur Color:</span>
+                                <div id="fur-colors" class="color-options">
+                                    <button class="color-btn selected" data-fur="🐱" data-color="orange">🐱</button>
+                                    <button class="color-btn" data-fur="🐈" data-color="black">🐈</button>
+                                    <button class="color-btn" data-fur="🐈‍⬛" data-color="black2">🐈‍⬛</button>
+                                    <button class="color-btn" data-fur="😺" data-color="happy">😺</button>
+                                    <button class="color-btn" data-fur="😸" data-color="grin">😸</button>
+                                    <button class="color-btn" data-fur="😻" data-color="love">😻</button>
+                                </div>
+                            </div>
+                            <div class="customize-group">
+                                <span class="customize-label">Pattern:</span>
+                                <div id="patterns" class="pattern-options">
+                                    <button class="pattern-btn selected" data-pattern="solid">Solid</button>
+                                    <button class="pattern-btn" data-pattern="tabby">Tabby</button>
+                                    <button class="pattern-btn" data-pattern="spotted">Spotted</button>
+                                    <button class="pattern-btn" data-pattern="patches">Patches</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cat-preview">
+                            <span id="cat-preview-icon" class="cat-preview-icon">🐱</span>
+                            <span id="pattern-preview" class="pattern-preview"></span>
+                        </div>
+                    </div>
+                    
                     <div class="name-suffix-section">
                         <label>Choose your suffix:</label>
                         <div id="suffix-grid" class="suffix-grid">
@@ -168,12 +198,16 @@
             </div>
         </div>
 
-        <!-- Rest Screen (between nights) -->
+        <!-- Rest/Sleep Screen (between nights) -->
         <div id="rest-screen" class="screen">
             <div class="night-sky"></div>
-            <div class="rest-content">
-                <h1>🌙 Time to Rest</h1>
-                <p class="rest-summary">You've treated all patients for tonight.</p>
+            <div class="sleep-content">
+                <div class="sleeping-cat">
+                    <span id="sleeping-cat-icon" class="sleeping-cat-icon">🐱</span>
+                    <span class="zzz">💤</span>
+                </div>
+                <h1>🌙 Time to Sleep</h1>
+                <p class="rest-summary">You curl up in your nest after a long night...</p>
                 <div class="night-stats">
                     <div class="night-stat">
                         <span class="stat-icon">💚</span>
@@ -184,9 +218,9 @@
                         <span id="cats-lost">0</span> cats lost
                     </div>
                 </div>
-                <p class="rest-message" id="rest-message">Get some sleep, medicine cat. Tomorrow brings new challenges.</p>
-                <button id="next-night-btn" class="btn btn-primary">
-                    ☀️ Start Next Night
+                <p class="rest-message" id="rest-message">Close your eyes and let StarClan guide your dreams...</p>
+                <button id="sleep-btn" class="btn btn-sleep">
+                    😴 Fall Asleep...
                 </button>
             </div>
             <div class="stars-container">
@@ -195,6 +229,14 @@
                 <span class="star">✨</span>
                 <span class="star">⭐</span>
                 <span class="star">✨</span>
+            </div>
+        </div>
+        
+        <!-- Dream/Wake Screen -->
+        <div id="dream-screen" class="screen">
+            <div class="night-sky dreamy"></div>
+            <div class="dream-content" id="dream-content">
+                <!-- Will be filled with StarClan message or peaceful sleep -->
             </div>
         </div>
 

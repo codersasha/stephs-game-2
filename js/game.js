@@ -11,6 +11,8 @@ const Game = {
     starCount: 0,
     playerName: '',
     selectedSuffix: '',
+    selectedCatIcon: '🐱',
+    selectedPattern: 'solid',
     apprentice: null,
     invasionSurvived: true,
 
@@ -25,6 +27,7 @@ const Game = {
             difficulty: document.getElementById('difficulty-screen'),
             game: document.getElementById('game-screen'),
             rest: document.getElementById('rest-screen'),
+            dream: document.getElementById('dream-screen'),
             gameover: document.getElementById('gameover-screen')
         };
 
@@ -36,7 +39,13 @@ const Game = {
             suffixGrid: document.getElementById('suffix-grid'),
             fullNamePreview: document.getElementById('full-name-preview'),
             confirmNameBtn: document.getElementById('confirm-name-btn'),
+            catPreviewIcon: document.getElementById('cat-preview-icon'),
+            patternPreview: document.getElementById('pattern-preview'),
             difficultyGreeting: document.getElementById('difficulty-greeting'),
+            sleepBtn: document.getElementById('sleep-btn'),
+            sleepingCatIcon: document.getElementById('sleeping-cat-icon'),
+            dreamScreen: document.getElementById('dream-screen'),
+            dreamContent: document.getElementById('dream-content'),
             nightCount: document.getElementById('night-count'),
             scoreCount: document.getElementById('score-count'),
             reputationFill: document.getElementById('reputation-fill'),
@@ -222,6 +231,28 @@ const Game = {
             });
         });
 
+        // Cat fur color buttons
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedCatIcon = btn.dataset.fur;
+                this.elements.catPreviewIcon.textContent = this.selectedCatIcon;
+                this.playSound('select');
+            });
+        });
+
+        // Cat pattern buttons
+        document.querySelectorAll('.pattern-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.pattern-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedPattern = btn.dataset.pattern;
+                this.elements.patternPreview.textContent = this.selectedPattern !== 'solid' ? `(${this.selectedPattern})` : '';
+                this.playSound('select');
+            });
+        });
+
         // Confirm name button
         this.elements.confirmNameBtn.addEventListener('click', () => {
             const prefix = this.elements.namePrefix.value.trim();
@@ -237,6 +268,12 @@ const Game = {
                 
                 this.showScreen('difficulty');
             }
+        });
+
+        // Sleep button
+        this.elements.sleepBtn.addEventListener('click', () => {
+            this.playSound('select');
+            this.enterDream();
         });
 
         // Difficulty buttons
@@ -422,10 +459,8 @@ const Game = {
             return;
         }
         
-        // Check if StarClan sends a welcome message on first night
-        if (!this.maybeShowStarClanMessage()) {
-            this.spawnNewPatient();
-        }
+        // StarClan messages now happen during sleep
+        this.spawnNewPatient();
     },
 
     /**
@@ -572,24 +607,120 @@ const Game = {
     },
 
     /**
-     * Show rest screen
+     * Show rest/sleep screen
      */
     showRestScreen: function() {
         this.elements.catsHealed.textContent = this.state.catsHealed;
         this.elements.catsLost.textContent = this.state.catsLost;
+        
+        // Show the player's cat icon sleeping
+        this.elements.sleepingCatIcon.textContent = this.selectedCatIcon;
 
         // Set rest message based on performance
         let message = '';
         if (this.state.catsLost === 0) {
-            message = 'Perfect night! StarClan smiles upon you. Rest well, medicine cat.';
+            message = 'Perfect night! Close your eyes and let StarClan visit your dreams...';
         } else if (this.state.catsHealed > this.state.catsLost) {
-            message = 'You did well tonight. May StarClan guide your paws tomorrow.';
+            message = 'A good night. Time to sleep and see what dreams may come...';
         } else {
-            message = 'A difficult night... Learn from your mistakes and try again.';
+            message = 'A difficult night... Perhaps StarClan will send guidance in your dreams.';
         }
         this.elements.restMessage.textContent = message;
 
         this.showScreen('rest');
+    },
+
+    /**
+     * Enter the dream state when falling asleep
+     */
+    enterDream: function() {
+        // Check if StarClan sends a message (40% chance during sleep)
+        if (Math.random() < 0.4) {
+            this.showStarClanDream();
+        } else {
+            this.showPeacefulSleep();
+        }
+    },
+
+    /**
+     * Show a peaceful sleep (no StarClan message)
+     */
+    showPeacefulSleep: function() {
+        this.elements.dreamContent.innerHTML = `
+            <div class="peaceful-sleep">
+                <h2>✨ Peaceful Dreams ✨</h2>
+                <p>You dream of sunny meadows and gentle streams...</p>
+                <p>Your ancestors watch over you from Silverpelt.</p>
+                <button class="btn btn-primary" onclick="Game.wakeUp()">
+                    ☀️ Wake Up
+                </button>
+            </div>
+        `;
+        this.showScreen('dream');
+    },
+
+    /**
+     * Show StarClan message during dream
+     */
+    showStarClanDream: function() {
+        const prophecy = GameLogic.getStarClanMessage();
+        
+        this.elements.dreamContent.innerHTML = `
+            <div class="dream-starclan">
+                <div class="dream-stars">✨⭐✨</div>
+                <h2>A Vision from StarClan</h2>
+                <p class="dream-sender">💫 ${prophecy.sender} appears before you...</p>
+                <div class="dream-prophecy">
+                    <p>"${prophecy.message}"</p>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">What will you do with this prophecy?</p>
+                <div class="dream-choices">
+                    <button class="dream-choice-btn" onclick="Game.handleDreamChoice('secret')">
+                        🤫 Keep it to yourself
+                    </button>
+                    <button class="dream-choice-btn" onclick="Game.handleDreamChoice('leader')">
+                        👑 Tell only the leader
+                    </button>
+                    <button class="dream-choice-btn" onclick="Game.handleDreamChoice('clan')">
+                        📢 Tell the whole Clan
+                    </button>
+                </div>
+            </div>
+        `;
+        this.playSound('starburst');
+        this.showScreen('dream');
+    },
+
+    /**
+     * Handle choice about sharing dream prophecy
+     */
+    handleDreamChoice: function(choice) {
+        const choiceData = GameLogic.SHARING_CHOICES[choice];
+        
+        // Apply reputation change
+        this.state.reputation = Math.min(100, this.state.reputation + choiceData.reputationChange);
+        this.state.score += choiceData.reputationChange * 5;
+        
+        // Show response then wake up
+        this.elements.dreamContent.innerHTML = `
+            <div class="peaceful-sleep">
+                <h2>${choiceData.icon} ${choiceData.name}</h2>
+                <p>${choiceData.response}</p>
+                <p style="margin-top: 15px; color: rgba(255,255,255,0.7);">The vision fades as dawn approaches...</p>
+                <button class="btn btn-primary" onclick="Game.wakeUp()">
+                    ☀️ Wake Up
+                </button>
+            </div>
+        `;
+        this.playSound('select');
+        this.updateUI();
+    },
+
+    /**
+     * Wake up and start next night
+     */
+    wakeUp: function() {
+        this.startNewNight();
     },
 
     /**
@@ -611,12 +742,8 @@ const Game = {
             return;
         }
         
-        // Check if StarClan sends a message
-        if (!this.maybeShowStarClanMessage()) {
-            // No StarClan message, spawn patient directly
-            this.spawnNewPatient();
-        }
-        // If StarClan message shown, patient will spawn after player responds
+        // StarClan messages now happen during sleep, not here
+        this.spawnNewPatient();
     },
 
     /**
