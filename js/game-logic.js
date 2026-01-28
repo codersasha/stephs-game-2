@@ -77,27 +77,36 @@ const GameLogic = {
             description: 'Soothes scratches and sore pads',
             icon: '🥬',
             color: '#228b22'
+        },
+        'mouse bile': {
+            name: 'Mouse Bile',
+            description: 'Removes ticks (don\'t eat it!)',
+            icon: '🐭',
+            color: '#8b4513'
+        },
+        comfrey: {
+            name: 'Comfrey Root',
+            description: 'Repairs broken bones',
+            icon: '🌰',
+            color: '#654321'
+        },
+        burdock: {
+            name: 'Burdock Root',
+            description: 'Cures rat bites and infections',
+            icon: '🪴',
+            color: '#556b2f'
+        },
+        yarrow: {
+            name: 'Yarrow',
+            description: 'Makes cats vomit up poison',
+            icon: '🌾',
+            color: '#f5f5dc'
         }
     },
 
     // Ailments and their correct treatments
     AILMENTS: {
-        greencough: {
-            name: 'Greencough',
-            description: 'is coughing badly and has trouble breathing',
-            correctHerbs: ['catmint', 'honey'],
-            requiredCorrect: 1, // Need at least 1 correct
-            icon: '🤒',
-            severity: 'serious'
-        },
-        wounds: {
-            name: 'Battle Wounds',
-            description: 'has deep scratches from a battle',
-            correctHerbs: ['cobwebs', 'marigold', 'horsetail'],
-            requiredCorrect: 2,
-            icon: '🩹',
-            severity: 'medium'
-        },
+        // MILD ailments
         bellyache: {
             name: 'Bellyache',
             description: 'has a terrible tummy ache',
@@ -105,22 +114,6 @@ const GameLogic = {
             requiredCorrect: 1,
             icon: '😿',
             severity: 'mild'
-        },
-        fever: {
-            name: 'High Fever',
-            description: 'is burning up with fever',
-            correctHerbs: ['feverfew', 'borage'],
-            requiredCorrect: 1,
-            icon: '🌡️',
-            severity: 'serious'
-        },
-        shock: {
-            name: 'Shock',
-            description: 'is in shock after a scary experience',
-            correctHerbs: ['thyme', 'poppy', 'chamomile'],
-            requiredCorrect: 1,
-            icon: '😰',
-            severity: 'medium'
         },
         sorethroat: {
             name: 'Sore Throat',
@@ -138,18 +131,10 @@ const GameLogic = {
             icon: '🐾',
             severity: 'mild'
         },
-        infection: {
-            name: 'Infected Wound',
-            description: 'has an infected wound that smells bad',
-            correctHerbs: ['marigold', 'horsetail', 'cobwebs'],
-            requiredCorrect: 2,
-            icon: '🤕',
-            severity: 'serious'
-        },
         whitecough: {
             name: 'Whitecough',
             description: 'has a mild cough and sniffles',
-            correctHerbs: ['catmint', 'honey', 'feverfew'],
+            correctHerbs: ['catmint', 'honey'],
             requiredCorrect: 1,
             icon: '🤧',
             severity: 'mild'
@@ -161,6 +146,160 @@ const GameLogic = {
             requiredCorrect: 1,
             icon: '😰',
             severity: 'mild'
+        },
+        tick: {
+            name: 'Tick Infestation',
+            description: 'is covered in annoying ticks',
+            correctHerbs: ['mouse bile'],
+            requiredCorrect: 1,
+            icon: '🪲',
+            severity: 'mild'
+        },
+        nettle_sting: {
+            name: 'Nettle Stings',
+            description: 'got stung by nettles and is itchy all over',
+            correctHerbs: ['dock', 'chamomile'],
+            requiredCorrect: 1,
+            icon: '🌿',
+            severity: 'mild'
+        },
+        exhaustion: {
+            name: 'Exhaustion',
+            description: 'is extremely tired and weak',
+            correctHerbs: ['chamomile', 'poppy'],
+            requiredCorrect: 1,
+            icon: '😴',
+            severity: 'mild'
+        },
+        // MEDIUM ailments
+        wounds: {
+            name: 'Battle Wounds',
+            description: 'has deep scratches from a battle',
+            correctHerbs: ['cobwebs', 'marigold', 'horsetail'],
+            requiredCorrect: 2,
+            icon: '🩹',
+            severity: 'medium'
+        },
+        shock: {
+            name: 'Shock',
+            description: 'is in shock after a scary experience',
+            correctHerbs: ['thyme', 'poppy', 'chamomile'],
+            requiredCorrect: 1,
+            icon: '😱',
+            severity: 'medium'
+        },
+        sprain: {
+            name: 'Sprained Leg',
+            description: 'twisted their leg while running',
+            correctHerbs: ['comfrey', 'poppy'],
+            requiredCorrect: 1,
+            icon: '🦵',
+            severity: 'medium'
+        },
+        rat_bite: {
+            name: 'Rat Bite',
+            description: 'was bitten by a rat and the wound is red',
+            correctHerbs: ['burdock', 'cobwebs', 'marigold'],
+            requiredCorrect: 2,
+            icon: '🐀',
+            severity: 'medium'
+        },
+        poisoning: {
+            name: 'Mild Poisoning',
+            description: 'ate something bad and feels sick',
+            correctHerbs: ['yarrow', 'juniper'],
+            requiredCorrect: 1,
+            icon: '🤢',
+            severity: 'medium'
+        },
+        chills: {
+            name: 'Chills',
+            description: 'is shivering and cannot get warm',
+            correctHerbs: ['feverfew', 'borage', 'honey'],
+            requiredCorrect: 1,
+            icon: '🥶',
+            severity: 'medium'
+        },
+        claw_wound: {
+            name: 'Claw Wound',
+            description: 'has a deep claw mark on their side',
+            correctHerbs: ['cobwebs', 'horsetail', 'marigold'],
+            requiredCorrect: 2,
+            icon: '💢',
+            severity: 'medium'
+        },
+        headache: {
+            name: 'Bad Headache',
+            description: 'has a pounding headache and can\'t focus',
+            correctHerbs: ['feverfew', 'poppy'],
+            requiredCorrect: 1,
+            icon: '🤕',
+            severity: 'medium'
+        },
+        // SERIOUS ailments
+        greencough: {
+            name: 'Greencough',
+            description: 'is coughing badly and has trouble breathing',
+            correctHerbs: ['catmint', 'honey'],
+            requiredCorrect: 2,
+            icon: '🤒',
+            severity: 'serious'
+        },
+        fever: {
+            name: 'High Fever',
+            description: 'is burning up with fever',
+            correctHerbs: ['feverfew', 'borage'],
+            requiredCorrect: 2,
+            icon: '🌡️',
+            severity: 'serious'
+        },
+        infection: {
+            name: 'Infected Wound',
+            description: 'has an infected wound that smells bad',
+            correctHerbs: ['marigold', 'horsetail', 'cobwebs'],
+            requiredCorrect: 2,
+            icon: '🦠',
+            severity: 'serious'
+        },
+        broken_bone: {
+            name: 'Broken Bone',
+            description: 'has a broken leg and is in great pain',
+            correctHerbs: ['comfrey', 'poppy', 'cobwebs'],
+            requiredCorrect: 2,
+            icon: '🦴',
+            severity: 'serious'
+        },
+        severe_poisoning: {
+            name: 'Severe Poisoning',
+            description: 'ate deathberries and is very ill',
+            correctHerbs: ['yarrow', 'juniper', 'honey'],
+            requiredCorrect: 2,
+            icon: '☠️',
+            severity: 'serious'
+        },
+        blackcough: {
+            name: 'Blackcough',
+            description: 'has the deadly blackcough and struggles to breathe',
+            correctHerbs: ['catmint', 'honey', 'feverfew', 'borage'],
+            requiredCorrect: 3,
+            icon: '💀',
+            severity: 'serious'
+        },
+        dog_attack: {
+            name: 'Dog Attack Wounds',
+            description: 'was attacked by a dog and has many wounds',
+            correctHerbs: ['cobwebs', 'marigold', 'horsetail', 'poppy'],
+            requiredCorrect: 3,
+            icon: '🐕',
+            severity: 'serious'
+        },
+        fox_bite: {
+            name: 'Fox Bite',
+            description: 'was bitten by a fox and the wound is deep',
+            correctHerbs: ['burdock', 'cobwebs', 'marigold', 'horsetail'],
+            requiredCorrect: 2,
+            icon: '🦊',
+            severity: 'serious'
         }
     },
 
@@ -479,6 +618,9 @@ const GameLogic = {
         return [...allHerbKeys].sort(() => Math.random() - 0.5);
     },
 
+    // Track last ailment to avoid repeats
+    lastAilment: null,
+
     /**
      * Generate a new patient based on difficulty
      */
@@ -486,10 +628,15 @@ const GameLogic = {
         const allowedSeverities = settings?.allowedSeverities || ['mild', 'medium', 'serious'];
         const preferSeverity = settings?.preferSeverity || null;
         
-        // Filter ailments by allowed severities
-        const ailmentKeys = Object.keys(this.AILMENTS).filter(key => {
+        // Filter ailments by allowed severities AND exclude last ailment
+        let ailmentKeys = Object.keys(this.AILMENTS).filter(key => {
             return allowedSeverities.includes(this.AILMENTS[key].severity);
         });
+        
+        // Remove last ailment from options (avoid repeats)
+        if (this.lastAilment && ailmentKeys.length > 1) {
+            ailmentKeys = ailmentKeys.filter(key => key !== this.lastAilment);
+        }
         
         let selectedAilmentKey;
         
@@ -507,6 +654,9 @@ const GameLogic = {
         if (!selectedAilmentKey) {
             selectedAilmentKey = ailmentKeys[Math.floor(Math.random() * ailmentKeys.length)];
         }
+        
+        // Remember this ailment to avoid repeating
+        this.lastAilment = selectedAilmentKey;
         
         const ailment = this.AILMENTS[selectedAilmentKey];
         const name = this.CAT_NAMES[Math.floor(Math.random() * this.CAT_NAMES.length)];
