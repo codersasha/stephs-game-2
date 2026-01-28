@@ -148,6 +148,17 @@
                         <input type="text" id="name-prefix" placeholder="Fire, Silver, Leaf..." maxlength="12" autocomplete="off">
                     </div>
                     
+                    <div class="age-section">
+                        <label>Your age in moons:</label>
+                        <div class="age-selector">
+                            <button class="age-btn" data-age="6">6 moons</button>
+                            <button class="age-btn selected" data-age="8">8 moons</button>
+                            <button class="age-btn" data-age="10">10 moons</button>
+                            <button class="age-btn" data-age="12">12 moons</button>
+                        </div>
+                        <p class="age-hint" id="age-hint">Just became an apprentice!</p>
+                    </div>
+                    
                     <div class="cat-customize-section">
                         <label>Customize your cat:</label>
                         <div class="customize-row">
@@ -248,6 +259,13 @@
         <!-- Main Game Screen -->
         <div id="game-screen" class="screen">
             <div class="game-header">
+                <div class="stat player-info">
+                    <span id="player-icon" class="player-icon">🐱</span>
+                    <div class="player-details">
+                        <span id="player-name-display" class="player-name-display">You</span>
+                        <span id="player-age-display" class="player-age-display">8 moons</span>
+                    </div>
+                </div>
                 <div class="stat">
                     <span class="stat-icon">🌙</span>
                     <span class="stat-label">Night</span>
@@ -271,6 +289,7 @@
                 <div id="patient-card" class="patient-card">
                     <div class="patient-icon" id="patient-icon">🐱</div>
                     <h2 id="patient-name">Waiting for patient...</h2>
+                    <p id="patient-age" class="patient-age"></p>
                     <p id="patient-ailment" class="ailment-text"></p>
                 </div>
                 <!-- Apprentice hint bubble -->

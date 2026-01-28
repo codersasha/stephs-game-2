@@ -790,6 +790,53 @@ html, body {
     font-style: italic;
 }
 
+/* Age Selection */
+.age-section {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.age-section label {
+    display: block;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.age-selector {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.age-btn {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.age-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.age-btn.selected {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+.age-hint {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+}
+
 /* Cat Customization */
 .cat-customize-section {
     margin-bottom: 20px;
@@ -1091,6 +1138,32 @@ html, body {
     color: white;
 }
 
+.player-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
+.player-icon {
+    font-size: 1.8rem;
+}
+
+.player-details {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5px;
+}
+
+.player-name-display {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.player-age-display {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .stat-icon {
     font-size: 1.3rem;
     filter: drop-shadow(0 0 5px currentColor);
@@ -1188,8 +1261,22 @@ html, body {
 .patient-card h2 {
     color: #1a3a1a;
     font-size: 1.5rem;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.patient-age {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.patient-age .age-type {
+    background: rgba(45, 90, 39, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 5px;
 }
 
 .ailment-text {

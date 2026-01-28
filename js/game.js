@@ -13,6 +13,7 @@ const Game = {
     selectedSuffix: '',
     selectedCatIcon: '🐱',
     selectedPattern: 'solid',
+    playerAge: 8,
     apprentice: null,
     invasionSurvived: true,
     currentSaveSlot: null,
@@ -65,7 +66,12 @@ const Game = {
             confirmNameBtn: document.getElementById('confirm-name-btn'),
             catPreviewIcon: document.getElementById('cat-preview-icon'),
             patternPreview: document.getElementById('pattern-preview'),
+            ageHint: document.getElementById('age-hint'),
             difficultyGreeting: document.getElementById('difficulty-greeting'),
+            playerIcon: document.getElementById('player-icon'),
+            playerNameDisplay: document.getElementById('player-name-display'),
+            playerAgeDisplay: document.getElementById('player-age-display'),
+            patientAge: document.getElementById('patient-age'),
             sleepBtn: document.getElementById('sleep-btn'),
             sleepingCatIcon: document.getElementById('sleeping-cat-icon'),
             dreamScreen: document.getElementById('dream-screen'),
@@ -333,6 +339,17 @@ const Game = {
             });
         });
 
+        // Age buttons
+        document.querySelectorAll('.age-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.playerAge = parseInt(btn.dataset.age);
+                this.updateAgeHint();
+                this.playSound('select');
+            });
+        });
+
         // Confirm name button
         this.elements.confirmNameBtn.addEventListener('click', () => {
             const prefix = this.elements.namePrefix.value.trim();
@@ -497,6 +514,29 @@ const Game = {
     },
 
     /**
+     * Update age hint text
+     */
+    updateAgeHint: function() {
+        const hints = {
+            6: "Just became an apprentice!",
+            8: "Learning the ways of medicine",
+            10: "Almost a full medicine cat!",
+            12: "Ready for your ceremony!"
+        };
+        this.elements.ageHint.textContent = hints[this.playerAge] || "";
+    },
+
+    /**
+     * Get age type based on moons
+     */
+    getAgeType: function(moons) {
+        if (moons < 6) return 'kit';
+        if (moons < 12) return 'apprentice';
+        if (moons < 96) return 'warrior';
+        return 'elder';
+    },
+
+    /**
      * Update name preview
      */
     updateNamePreview: function() {
@@ -557,11 +597,21 @@ const Game = {
         this.state.availableHerbs = GameLogic.generateAvailableHerbs(this.state);
         this.state.selectedHerbs = [];
 
-        // Update patient display
+        // Generate random age for patient
         const patient = this.state.currentPatient;
+        patient.age = this.generatePatientAge();
+        const ageType = this.getAgeType(patient.age);
+        
+        // Update patient display
         this.elements.patientIcon.textContent = patient.ailmentData.icon;
         this.elements.patientName.textContent = patient.name;
+        this.elements.patientAge.innerHTML = `${patient.age} moons old <span class="age-type">${ageType}</span>`;
         this.elements.patientAilment.textContent = `${patient.name} ${patient.ailmentData.description}`;
+
+        // Update player display
+        this.elements.playerIcon.textContent = this.selectedCatIcon;
+        this.elements.playerNameDisplay.textContent = this.playerName;
+        this.elements.playerAgeDisplay.textContent = `${this.playerAge} moons`;
 
         // Render herbs
         this.renderHerbs();
@@ -569,6 +619,27 @@ const Game = {
         
         // Show apprentice hint if we have one
         this.showApprenticeHint();
+    },
+
+    /**
+     * Generate a random age for a patient
+     */
+    generatePatientAge: function() {
+        // Different probabilities for different age groups
+        const roll = Math.random();
+        if (roll < 0.15) {
+            // Kit (1-5 moons)
+            return Math.floor(Math.random() * 5) + 1;
+        } else if (roll < 0.35) {
+            // Apprentice (6-11 moons)
+            return Math.floor(Math.random() * 6) + 6;
+        } else if (roll < 0.85) {
+            // Warrior (12-80 moons)
+            return Math.floor(Math.random() * 69) + 12;
+        } else {
+            // Elder (81-150 moons)
+            return Math.floor(Math.random() * 70) + 81;
+        }
     },
 
     /**
@@ -1203,6 +1274,7 @@ const Game = {
             this.fullWarriorName = saveData.fullWarriorName;
             this.selectedCatIcon = saveData.catIcon;
             this.selectedPattern = saveData.pattern;
+            this.playerAge = saveData.playerAge || 8;
             this.apprentice = saveData.apprentice;
             this.state = saveData.state;
             
@@ -1239,6 +1311,7 @@ const Game = {
             fullWarriorName: this.fullWarriorName,
             catIcon: this.selectedCatIcon,
             pattern: this.selectedPattern,
+            playerAge: this.playerAge,
             apprentice: this.apprentice,
             state: this.state,
             night: this.state.night,
