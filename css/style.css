@@ -1037,6 +1037,99 @@ html, body {
         0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
+/* StarClan Modal Styles */
+.starclan-content {
+    background: linear-gradient(135deg, #1a1a3e 0%, #0d0d2b 100%);
+    color: white;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 50px rgba(100, 100, 200, 0.3),
+        inset 0 0 30px rgba(100, 100, 200, 0.1);
+    max-width: 400px;
+}
+
+.starclan-stars {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    animation: twinkle 1.5s ease-in-out infinite;
+}
+
+.starclan-content h2 {
+    color: #c0c0ff;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(150, 150, 255, 0.5);
+}
+
+.starclan-sender {
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.starclan-sender span {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.prophecy-box {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.prophecy-box p {
+    font-size: 1.15rem;
+    font-style: italic;
+    color: #ffffcc;
+    line-height: 1.6;
+    text-shadow: 0 0 10px rgba(255, 255, 200, 0.3);
+}
+
+.sharing-prompt {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.sharing-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-share {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-share:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+    border-color: rgba(255, 215, 0, 0.5);
+    transform: scale(1.03);
+}
+
+.share-icon {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.share-name {
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
 @keyframes modalPop {
     0% { transform: scale(0.7) translateY(20px); opacity: 0; }
     50% { transform: scale(1.03); }

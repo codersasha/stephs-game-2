@@ -164,6 +164,112 @@ const GameLogic = {
         }
     },
 
+    // StarClan prophecies and messages
+    STARCLAN_MESSAGES: [
+        {
+            message: "Beware the shadow that creeps through the forest...",
+            sender: "Bluestar"
+        },
+        {
+            message: "When the moon runs red, danger comes to the Clan.",
+            sender: "Yellowfang"
+        },
+        {
+            message: "Trust in your healing paws, young one. They will guide you.",
+            sender: "Spottedleaf"
+        },
+        {
+            message: "A storm is coming. The Clan must stand together.",
+            sender: "Firestar"
+        },
+        {
+            message: "Look to the stars when hope seems lost.",
+            sender: "Cinderpelt"
+        },
+        {
+            message: "Three will become one, and the forest will be saved.",
+            sender: "Midnight"
+        },
+        {
+            message: "The darkest hour is just before dawn.",
+            sender: "Tallstar"
+        },
+        {
+            message: "Water will wash away the old, and bring forth the new.",
+            sender: "Crookedstar"
+        },
+        {
+            message: "A new warrior rises with the sun.",
+            sender: "Lionheart"
+        },
+        {
+            message: "Healing comes not just from herbs, but from the heart.",
+            sender: "Leafpool"
+        },
+        {
+            message: "The path ahead is difficult, but you are not alone.",
+            sender: "Jayfeather"
+        },
+        {
+            message: "Blood will spill blood, unless peace is chosen.",
+            sender: "Bramblestar"
+        },
+        {
+            message: "Keep your friends close, medicine cat.",
+            sender: "Ravenpaw"
+        },
+        {
+            message: "The herbs you seek grow where the sun meets shadow.",
+            sender: "Mudfur"
+        },
+        {
+            message: "Your ancestors walk beside you always.",
+            sender: "Silverstream"
+        }
+    ],
+
+    /**
+     * Get a random StarClan message
+     */
+    getStarClanMessage: function() {
+        const index = Math.floor(Math.random() * this.STARCLAN_MESSAGES.length);
+        return this.STARCLAN_MESSAGES[index];
+    },
+
+    /**
+     * Sharing choices and their effects
+     */
+    SHARING_CHOICES: {
+        secret: {
+            name: "Keep it secret",
+            description: "Hold this message close to your heart",
+            icon: "🤫",
+            reputationChange: 0,
+            response: "You keep the prophecy hidden in your heart. Perhaps the time is not right to share it..."
+        },
+        onecat: {
+            name: "Tell one trusted friend",
+            description: "Share with a close clanmate",
+            icon: "🐱",
+            reputationChange: 2,
+            response: "Your friend listens carefully and promises to help watch for signs."
+        },
+        leader: {
+            name: "Tell the leader",
+            description: "Report to your Clan leader",
+            icon: "👑",
+            reputationChange: 5,
+            response: "The leader nods thoughtfully. 'Thank you for telling me, medicine cat. We will be vigilant.'"
+        },
+        clan: {
+            name: "Tell the whole Clan",
+            description: "Announce at a Clan meeting",
+            icon: "📢",
+            reputationChange: 3,
+            response: "The Clan murmurs with concern, but they are grateful to know what StarClan has shared."
+        }
+    },
+
     // Cat names for patients
     CAT_NAMES: [
         'Fernpaw', 'Thornkit', 'Brambleclaw', 'Squirrelflight', 'Leafpool',

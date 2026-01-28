@@ -59,7 +59,16 @@ const Game = {
             playAgainBtn: document.getElementById('play-again-btn'),
             finalScore: document.getElementById('final-score'),
             finalHealed: document.getElementById('final-healed'),
-            finalNights: document.getElementById('final-nights')
+            finalNights: document.getElementById('final-nights'),
+            // StarClan elements
+            starclanModal: document.getElementById('starclan-modal'),
+            starclanSender: document.getElementById('starclan-sender'),
+            starclanMessage: document.getElementById('starclan-message'),
+            starclanResponseModal: document.getElementById('starclan-response-modal'),
+            shareResultIcon: document.getElementById('share-result-icon'),
+            shareResultTitle: document.getElementById('share-result-title'),
+            shareResultMessage: document.getElementById('share-result-message'),
+            starclanContinueBtn: document.getElementById('starclan-continue-btn')
         };
 
         // Create initial stars
@@ -233,7 +242,21 @@ const Game = {
 
         // Play again button
         this.elements.playAgainBtn.addEventListener('click', () => {
-            this.showScreen('difficulty');
+            this.showScreen('name');
+        });
+
+        // StarClan sharing buttons
+        document.querySelectorAll('.btn-share').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const choice = btn.dataset.choice;
+                this.handleStarClanChoice(choice);
+            });
+        });
+
+        // StarClan continue button
+        this.elements.starclanContinueBtn.addEventListener('click', () => {
+            this.elements.starclanResponseModal.classList.remove('active');
+            this.spawnNewPatient();
         });
     },
 
@@ -352,7 +375,11 @@ const Game = {
         this.state = GameLogic.createInitialState(difficulty);
         this.showScreen('game');
         this.updateUI();
-        this.spawnNewPatient();
+        
+        // Check if StarClan sends a welcome message on first night
+        if (!this.maybeShowStarClanMessage()) {
+            this.spawnNewPatient();
+        }
     },
 
     /**
@@ -523,7 +550,13 @@ const Game = {
         this.state = GameLogic.startNewNight(this.state);
         this.showScreen('game');
         this.updateUI();
-        this.spawnNewPatient();
+        
+        // Check if StarClan sends a message
+        if (!this.maybeShowStarClanMessage()) {
+            // No StarClan message, spawn patient directly
+            this.spawnNewPatient();
+        }
+        // If StarClan message shown, patient will spawn after player responds
     },
 
     /**
@@ -549,6 +582,55 @@ const Game = {
         this.elements.nightCount.textContent = this.state.night;
         this.elements.scoreCount.textContent = this.state.score;
         this.elements.reputationFill.style.width = `${this.state.reputation}%`;
+    },
+
+    /**
+     * Show a StarClan message
+     */
+    showStarClanMessage: function() {
+        const prophecy = GameLogic.getStarClanMessage();
+        
+        this.elements.starclanSender.textContent = prophecy.sender;
+        this.elements.starclanMessage.textContent = `"${prophecy.message}"`;
+        
+        this.playSound('starburst');
+        this.elements.starclanModal.classList.add('active');
+    },
+
+    /**
+     * Handle player's choice about sharing the prophecy
+     */
+    handleStarClanChoice: function(choice) {
+        const choiceData = GameLogic.SHARING_CHOICES[choice];
+        
+        // Apply reputation change
+        this.state.reputation = Math.min(100, this.state.reputation + choiceData.reputationChange);
+        this.state.score += choiceData.reputationChange * 5;
+        
+        // Hide StarClan modal
+        this.elements.starclanModal.classList.remove('active');
+        
+        // Show response
+        this.elements.shareResultIcon.textContent = choiceData.icon;
+        this.elements.shareResultTitle.textContent = choiceData.name;
+        this.elements.shareResultMessage.textContent = choiceData.response;
+        
+        this.playSound('select');
+        this.elements.starclanResponseModal.classList.add('active');
+        
+        this.updateUI();
+    },
+
+    /**
+     * Check if StarClan should send a message (random chance)
+     */
+    maybeShowStarClanMessage: function() {
+        // 30% chance of getting a StarClan message at the start of each night
+        if (Math.random() < 0.3) {
+            this.showStarClanMessage();
+            return true;
+        }
+        return false;
     }
 };
 

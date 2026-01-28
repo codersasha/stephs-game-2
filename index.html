@@ -188,6 +188,47 @@
             </div>
         </div>
 
+        <!-- StarClan Message Modal -->
+        <div id="starclan-modal" class="modal">
+            <div class="modal-content starclan-content">
+                <div class="starclan-stars">✨⭐✨</div>
+                <h2>A Message from StarClan</h2>
+                <p class="starclan-sender">💫 <span id="starclan-sender">Bluestar</span> speaks to you...</p>
+                <div class="prophecy-box">
+                    <p id="starclan-message">"Beware the shadow..."</p>
+                </div>
+                <p class="sharing-prompt">What will you do with this prophecy?</p>
+                <div class="sharing-buttons">
+                    <button class="btn-share" data-choice="secret">
+                        <span class="share-icon">🤫</span>
+                        <span class="share-name">Keep it secret</span>
+                    </button>
+                    <button class="btn-share" data-choice="onecat">
+                        <span class="share-icon">🐱</span>
+                        <span class="share-name">Tell one friend</span>
+                    </button>
+                    <button class="btn-share" data-choice="leader">
+                        <span class="share-icon">👑</span>
+                        <span class="share-name">Tell the leader</span>
+                    </button>
+                    <button class="btn-share" data-choice="clan">
+                        <span class="share-icon">📢</span>
+                        <span class="share-name">Tell the Clan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- StarClan Response Modal -->
+        <div id="starclan-response-modal" class="modal">
+            <div class="modal-content">
+                <div class="result-icon" id="share-result-icon">✨</div>
+                <h2 id="share-result-title">Message Shared</h2>
+                <p id="share-result-message"></p>
+                <button id="starclan-continue-btn" class="btn btn-primary">Continue</button>
+            </div>
+        </div>
+
         <!-- Result Modal -->
         <div id="result-modal" class="modal">
             <div class="modal-content">
