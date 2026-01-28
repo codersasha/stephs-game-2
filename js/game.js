@@ -11,6 +11,7 @@ const Game = {
     starCount: 0,
     playerName: '',
     selectedSuffix: '',
+    apprentice: null,
 
     /**
      * Initialize the game
@@ -60,6 +61,14 @@ const Game = {
             finalScore: document.getElementById('final-score'),
             finalHealed: document.getElementById('final-healed'),
             finalNights: document.getElementById('final-nights'),
+            // Apprentice elements
+            apprenticeModal: document.getElementById('apprentice-modal'),
+            apprenticeName: document.getElementById('apprentice-name'),
+            apprenticePersonality: document.getElementById('apprentice-personality'),
+            welcomeApprenticeBtn: document.getElementById('welcome-apprentice-btn'),
+            apprenticeHint: document.getElementById('apprentice-hint'),
+            hintApprenticeName: document.getElementById('hint-apprentice-name'),
+            hintText: document.getElementById('hint-text'),
             // StarClan elements
             starclanModal: document.getElementById('starclan-modal'),
             starclanSender: document.getElementById('starclan-sender'),
@@ -245,6 +254,16 @@ const Game = {
             this.showScreen('name');
         });
 
+        // Welcome apprentice button
+        this.elements.welcomeApprenticeBtn.addEventListener('click', () => {
+            this.elements.apprenticeModal.classList.remove('active');
+            this.playSound('success');
+            // Continue to check for StarClan message or spawn patient
+            if (!this.maybeShowStarClanMessage()) {
+                this.spawnNewPatient();
+            }
+        });
+
         // StarClan sharing buttons
         document.querySelectorAll('.btn-share').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -373,8 +392,14 @@ const Game = {
      */
     startGame: function(difficulty) {
         this.state = GameLogic.createInitialState(difficulty);
+        this.apprentice = null; // Reset apprentice for new game
         this.showScreen('game');
         this.updateUI();
+        
+        // First check for apprentice (rare on first night but possible)
+        if (this.checkForApprentice()) {
+            return;
+        }
         
         // Check if StarClan sends a welcome message on first night
         if (!this.maybeShowStarClanMessage()) {
@@ -402,6 +427,9 @@ const Game = {
         // Render herbs
         this.renderHerbs();
         this.updateSelectedHerbs();
+        
+        // Show apprentice hint if we have one
+        this.showApprenticeHint();
     },
 
     /**
@@ -551,6 +579,12 @@ const Game = {
         this.showScreen('game');
         this.updateUI();
         
+        // First check for apprentice (if don't have one yet)
+        if (this.checkForApprentice()) {
+            // Apprentice modal shown, rest will happen after welcome
+            return;
+        }
+        
         // Check if StarClan sends a message
         if (!this.maybeShowStarClanMessage()) {
             // No StarClan message, spawn patient directly
@@ -631,6 +665,55 @@ const Game = {
             return true;
         }
         return false;
+    },
+
+    /**
+     * Check if player gets an apprentice
+     */
+    checkForApprentice: function() {
+        if (this.state.hasApprentice) return false;
+        
+        const newApprentice = GameLogic.checkForApprentice(this.state);
+        if (newApprentice) {
+            this.apprentice = newApprentice;
+            this.state.hasApprentice = true;
+            this.showApprenticeModal(newApprentice);
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Show the apprentice arrival modal
+     */
+    showApprenticeModal: function(apprentice) {
+        this.elements.apprenticeName.textContent = apprentice.name;
+        this.elements.apprenticePersonality.textContent = `is ${apprentice.personality}`;
+        this.playSound('success');
+        this.elements.apprenticeModal.classList.add('active');
+    },
+
+    /**
+     * Show apprentice hint for current patient
+     */
+    showApprenticeHint: function() {
+        if (!this.apprentice || !this.state.currentPatient) {
+            this.elements.apprenticeHint.style.display = 'none';
+            return;
+        }
+
+        // 60% chance apprentice gives a hint
+        if (Math.random() < 0.6) {
+            const hint = GameLogic.getApprenticeHint(this.state.currentPatient.ailment);
+            if (hint) {
+                this.elements.hintApprenticeName.textContent = this.apprentice.name + ':';
+                this.elements.hintText.textContent = hint;
+                this.elements.apprenticeHint.style.display = 'block';
+                return;
+            }
+        }
+        
+        this.elements.apprenticeHint.style.display = 'none';
     }
 };
 

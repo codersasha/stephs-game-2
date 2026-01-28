@@ -270,6 +270,75 @@ const GameLogic = {
         }
     },
 
+    // Possible apprentice names (kit names that become paw)
+    APPRENTICE_NAMES: [
+        { prefix: 'Moss', personality: 'curious and eager to learn' },
+        { prefix: 'Fern', personality: 'gentle and caring' },
+        { prefix: 'Bramble', personality: 'determined and hardworking' },
+        { prefix: 'Leaf', personality: 'calm and thoughtful' },
+        { prefix: 'Willow', personality: 'graceful and patient' },
+        { prefix: 'Echo', personality: 'quiet but observant' },
+        { prefix: 'Dawn', personality: 'bright and optimistic' },
+        { prefix: 'Honey', personality: 'sweet and helpful' },
+        { prefix: 'Spotted', personality: 'clever and quick' },
+        { prefix: 'Feather', personality: 'light-footed and gentle' },
+        { prefix: 'Cloud', personality: 'dreamy but talented' },
+        { prefix: 'Ivy', personality: 'sharp and dedicated' }
+    ],
+
+    /**
+     * Generate a random apprentice
+     */
+    generateApprentice: function() {
+        const apprentice = this.APPRENTICE_NAMES[Math.floor(Math.random() * this.APPRENTICE_NAMES.length)];
+        return {
+            name: apprentice.prefix + 'paw',
+            prefix: apprentice.prefix,
+            personality: apprentice.personality
+        };
+    },
+
+    /**
+     * Check if player gets an apprentice (10-30% chance per night)
+     */
+    checkForApprentice: function(state) {
+        // Don't give another apprentice if already have one
+        if (state.hasApprentice) {
+            return null;
+        }
+        
+        // Base 15% chance, increases slightly each night without one
+        const baseChance = 0.15;
+        const bonusChance = (state.night - 1) * 0.03; // +3% per night
+        const totalChance = Math.min(0.30, baseChance + bonusChance); // Max 30%
+        
+        if (Math.random() < totalChance) {
+            return this.generateApprentice();
+        }
+        return null;
+    },
+
+    /**
+     * Get apprentice hint for current ailment
+     */
+    getApprenticeHint: function(ailmentKey) {
+        const ailment = this.AILMENTS[ailmentKey];
+        if (!ailment) return null;
+        
+        // Apprentice suggests one correct herb
+        const correctHerb = ailment.correctHerbs[Math.floor(Math.random() * ailment.correctHerbs.length)];
+        const herbData = this.HERBS[correctHerb];
+        
+        const hints = [
+            `Maybe we should try ${herbData.name}? I read about it...`,
+            `I think ${herbData.name} might help with this!`,
+            `What about ${herbData.name}? It ${herbData.description.toLowerCase()}.`,
+            `I remember learning that ${herbData.name} is good for this...`
+        ];
+        
+        return hints[Math.floor(Math.random() * hints.length)];
+    },
+
     // Cat names for patients
     CAT_NAMES: [
         'Fernpaw', 'Thornkit', 'Brambleclaw', 'Squirrelflight', 'Leafpool',
@@ -324,7 +393,7 @@ const GameLogic = {
             night: 1,
             patientsTonight: 0,
             isResting: false,
-            timeRemaining: 0,
+            hasApprentice: false,
             highScore: 0,
             gameOver: false
         };

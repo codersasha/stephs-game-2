@@ -137,6 +137,16 @@
                     <h2 id="patient-name">Waiting for patient...</h2>
                     <p id="patient-ailment" class="ailment-text"></p>
                 </div>
+                <!-- Apprentice hint bubble -->
+                <div id="apprentice-hint" class="apprentice-hint" style="display: none;">
+                    <div class="hint-bubble">
+                        <span class="hint-cat">🐱</span>
+                        <div class="hint-content">
+                            <span class="hint-name" id="hint-apprentice-name">Mosspaw</span>
+                            <p id="hint-text">"Maybe we should try cobwebs?"</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="treatment-area">
@@ -185,6 +195,23 @@
                 <span class="star">✨</span>
                 <span class="star">⭐</span>
                 <span class="star">✨</span>
+            </div>
+        </div>
+
+        <!-- Apprentice Arrival Modal -->
+        <div id="apprentice-modal" class="modal">
+            <div class="modal-content apprentice-content">
+                <div class="apprentice-icon">🐱✨</div>
+                <h2>A New Apprentice!</h2>
+                <p class="apprentice-announce">The Clan leader has assigned you an apprentice!</p>
+                <div class="apprentice-box">
+                    <h3 id="apprentice-name">Mosspaw</h3>
+                    <p id="apprentice-personality">is curious and eager to learn</p>
+                </div>
+                <p class="apprentice-info">Your apprentice will sometimes give you hints about which herbs to use!</p>
+                <button id="welcome-apprentice-btn" class="btn btn-primary">
+                    Welcome to the den! 🌿
+                </button>
             </div>
         </div>
 
