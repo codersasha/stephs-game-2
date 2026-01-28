@@ -1130,6 +1130,82 @@ html, body {
     font-weight: bold;
 }
 
+/* Invasion Modal Styles */
+.invasion-content {
+    background: linear-gradient(135deg, #4a0000 0%, #2a0000 100%);
+    color: white;
+    border: 2px solid rgba(255, 100, 100, 0.5);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.7),
+        0 0 50px rgba(255, 0, 0, 0.3),
+        inset 0 0 30px rgba(255, 0, 0, 0.1);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.invasion-icon {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    animation: pulse-danger 1s ease infinite;
+}
+
+@keyframes pulse-danger {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.invasion-content h2 {
+    color: #ff4444;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 50, 50, 0.8);
+    letter-spacing: 3px;
+}
+
+.invasion-message {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.invasion-result {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.invasion-result.survived {
+    border: 2px solid rgba(100, 255, 100, 0.4);
+}
+
+.invasion-result.died {
+    border: 2px solid rgba(255, 100, 100, 0.4);
+}
+
+.invasion-result h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.invasion-result.survived h3 {
+    color: #98d8aa;
+}
+
+.invasion-result.died h3 {
+    color: #ff6666;
+}
+
+.invasion-result p {
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+}
+
 /* Apprentice Modal Styles */
 .apprentice-content {
     background: linear-gradient(135deg, #2d5a27 0%, #1a3a1a 100%);

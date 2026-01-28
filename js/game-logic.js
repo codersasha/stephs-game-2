@@ -339,6 +339,76 @@ const GameLogic = {
         return hints[Math.floor(Math.random() * hints.length)];
     },
 
+    // Invasion events (5-10% chance)
+    INVASIONS: [
+        {
+            type: 'ShadowClan',
+            icon: '⚔️',
+            message: 'ShadowClan warriors are attacking the camp!',
+            deathMessage: 'You were struck down defending the medicine den...',
+            surviveMessage: 'You managed to hide in the back of the medicine den until the battle ended!'
+        },
+        {
+            type: 'RiverClan',
+            icon: '🌊',
+            message: 'RiverClan is raiding the camp!',
+            deathMessage: 'A RiverClan warrior found you in the medicine den...',
+            surviveMessage: 'The warriors drove RiverClan back before they reached you!'
+        },
+        {
+            type: 'WindClan',
+            icon: '💨',
+            message: 'WindClan warriors are invading!',
+            deathMessage: 'You were caught in the crossfire of the battle...',
+            surviveMessage: 'You treated the wounded while the warriors fought off WindClan!'
+        },
+        {
+            type: 'Rogues',
+            icon: '😾',
+            message: 'A group of rogues is attacking the camp!',
+            deathMessage: 'The rogues showed no mercy to anyone they found...',
+            surviveMessage: 'The Clan warriors protected you from the rogues!'
+        },
+        {
+            type: 'Fox',
+            icon: '🦊',
+            message: 'A fox has gotten into the camp!',
+            deathMessage: 'The fox attacked before anyone could help you...',
+            surviveMessage: 'The warriors chased the fox away just in time!'
+        },
+        {
+            type: 'Badger',
+            icon: '🦡',
+            message: 'A badger is attacking the camp!',
+            deathMessage: 'The badger broke into the medicine den...',
+            surviveMessage: 'You escaped through the back of the den while warriors fought the badger!'
+        },
+        {
+            type: 'Dog',
+            icon: '🐕',
+            message: 'Dogs have found the camp!',
+            deathMessage: 'You couldn\'t escape the dogs in time...',
+            surviveMessage: 'You climbed a tree and waited until the dogs left!'
+        }
+    ],
+
+    /**
+     * Check if an invasion happens (5-10% chance)
+     */
+    checkForInvasion: function() {
+        // 7% base chance of invasion
+        if (Math.random() < 0.07) {
+            const invasion = this.INVASIONS[Math.floor(Math.random() * this.INVASIONS.length)];
+            // 30% chance of death during invasion
+            const survived = Math.random() > 0.30;
+            return {
+                ...invasion,
+                survived: survived
+            };
+        }
+        return null;
+    },
+
     // Cat names for patients
     CAT_NAMES: [
         'Fernpaw', 'Thornkit', 'Brambleclaw', 'Squirrelflight', 'Leafpool',

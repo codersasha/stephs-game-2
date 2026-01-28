@@ -12,6 +12,7 @@ const Game = {
     playerName: '',
     selectedSuffix: '',
     apprentice: null,
+    invasionSurvived: true,
 
     /**
      * Initialize the game
@@ -61,6 +62,12 @@ const Game = {
             finalScore: document.getElementById('final-score'),
             finalHealed: document.getElementById('final-healed'),
             finalNights: document.getElementById('final-nights'),
+            // Invasion elements
+            invasionModal: document.getElementById('invasion-modal'),
+            invasionIcon: document.getElementById('invasion-icon'),
+            invasionMessage: document.getElementById('invasion-message'),
+            invasionResult: document.getElementById('invasion-result'),
+            invasionContinueBtn: document.getElementById('invasion-continue-btn'),
             // Apprentice elements
             apprenticeModal: document.getElementById('apprentice-modal'),
             apprenticeName: document.getElementById('apprentice-name'),
@@ -252,6 +259,20 @@ const Game = {
         // Play again button
         this.elements.playAgainBtn.addEventListener('click', () => {
             this.showScreen('name');
+        });
+
+        // Invasion continue button
+        this.elements.invasionContinueBtn.addEventListener('click', () => {
+            this.elements.invasionModal.classList.remove('active');
+            if (this.invasionSurvived) {
+                // Continue playing
+                if (!this.maybeShowStarClanMessage()) {
+                    this.spawnNewPatient();
+                }
+            } else {
+                // Game over - died in invasion
+                this.showGameOver();
+            }
         });
 
         // Welcome apprentice button
@@ -579,7 +600,12 @@ const Game = {
         this.showScreen('game');
         this.updateUI();
         
-        // First check for apprentice (if don't have one yet)
+        // First check for invasion (rare but deadly!)
+        if (this.checkForInvasion()) {
+            return;
+        }
+        
+        // Then check for apprentice (if don't have one yet)
         if (this.checkForApprentice()) {
             // Apprentice modal shown, rest will happen after welcome
             return;
@@ -691,6 +717,48 @@ const Game = {
         this.elements.apprenticePersonality.textContent = `is ${apprentice.personality}`;
         this.playSound('success');
         this.elements.apprenticeModal.classList.add('active');
+    },
+
+    /**
+     * Check for invasion (5-10% chance)
+     */
+    checkForInvasion: function() {
+        const invasion = GameLogic.checkForInvasion();
+        if (invasion) {
+            this.showInvasion(invasion);
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Show invasion event
+     */
+    showInvasion: function(invasion) {
+        this.invasionSurvived = invasion.survived;
+        
+        this.elements.invasionIcon.textContent = invasion.icon;
+        this.elements.invasionMessage.textContent = invasion.message;
+        
+        if (invasion.survived) {
+            this.elements.invasionResult.className = 'invasion-result survived';
+            this.elements.invasionResult.innerHTML = `
+                <h3>✨ You Survived!</h3>
+                <p>${invasion.surviveMessage}</p>
+            `;
+            this.elements.invasionContinueBtn.textContent = 'Thank StarClan! 🙏';
+        } else {
+            this.elements.invasionResult.className = 'invasion-result died';
+            this.elements.invasionResult.innerHTML = `
+                <h3>💔 You Have Fallen...</h3>
+                <p>${invasion.deathMessage}</p>
+                <p style="margin-top: 10px; color: #aaa;">You will join StarClan now...</p>
+            `;
+            this.elements.invasionContinueBtn.textContent = 'Join StarClan... ⭐';
+        }
+        
+        this.playSound('fail');
+        this.elements.invasionModal.classList.add('active');
     },
 
     /**
