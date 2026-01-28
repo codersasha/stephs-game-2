@@ -8,6 +8,7 @@ const Game = {
     audioContext: null,
     screens: {},
     elements: {},
+    starCount: 0,
 
     /**
      * Initialize the game
@@ -24,6 +25,8 @@ const Game = {
 
         // Get game elements
         this.elements = {
+            starsContainer: document.getElementById('stars-container'),
+            playBtn: document.getElementById('play-btn'),
             nightCount: document.getElementById('night-count'),
             scoreCount: document.getElementById('score-count'),
             reputationFill: document.getElementById('reputation-fill'),
@@ -51,6 +54,9 @@ const Game = {
             finalNights: document.getElementById('final-nights')
         };
 
+        // Create initial stars
+        this.createInitialStars();
+
         // Set up event listeners
         this.setupEventListeners();
 
@@ -64,15 +70,106 @@ const Game = {
     },
 
     /**
+     * Create initial stars on home screen
+     */
+    createInitialStars: function() {
+        const starTypes = ['⭐', '✨', '🌟', '💫'];
+        const container = this.elements.starsContainer;
+        
+        // Create 15 initial stars
+        for (let i = 0; i < 15; i++) {
+            this.createStar(container, starTypes, false);
+        }
+        this.starCount = 15;
+    },
+
+    /**
+     * Create a single clickable star
+     */
+    createStar: function(container, starTypes, isNew) {
+        const star = document.createElement('span');
+        star.className = 'star-clickable' + (isNew ? ' star-new' : '');
+        star.textContent = starTypes[Math.floor(Math.random() * starTypes.length)];
+        
+        // Random position (avoid the center where the title is)
+        let top, left;
+        do {
+            top = Math.random() * 85 + 5; // 5% to 90%
+            left = Math.random() * 90 + 5; // 5% to 95%
+        } while (top > 25 && top < 65 && left > 20 && left < 80); // Avoid center
+        
+        star.style.top = top + '%';
+        star.style.left = left + '%';
+        star.style.animationDelay = (Math.random() * 2) + 's';
+        star.style.fontSize = (15 + Math.random() * 15) + 'px';
+        
+        // Click handler - Easter egg!
+        star.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.onStarClick(star, container, starTypes);
+        });
+        
+        container.appendChild(star);
+    },
+
+    /**
+     * Handle star click - spawn more stars!
+     */
+    onStarClick: function(clickedStar, container, starTypes) {
+        this.playSound('starburst');
+        
+        // Get position of clicked star
+        const rect = clickedStar.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const centerX = rect.left - containerRect.left + rect.width / 2;
+        const centerY = rect.top - containerRect.top + rect.height / 2;
+        
+        // Create burst effect
+        for (let i = 0; i < 5; i++) {
+            const burst = document.createElement('span');
+            burst.className = 'star-burst';
+            burst.textContent = starTypes[Math.floor(Math.random() * starTypes.length)];
+            burst.style.left = centerX + 'px';
+            burst.style.top = centerY + 'px';
+            burst.style.setProperty('--angle', (i * 72) + 'deg');
+            burst.style.transform = `rotate(${i * 72}deg)`;
+            container.appendChild(burst);
+            
+            // Remove burst after animation
+            setTimeout(() => burst.remove(), 1000);
+        }
+        
+        // Add 3-5 new permanent stars
+        const newStars = 3 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < newStars; i++) {
+            setTimeout(() => {
+                this.createStar(container, starTypes, true);
+                this.starCount++;
+            }, i * 100);
+        }
+        
+        // Make clicked star bigger briefly
+        clickedStar.style.transform = 'scale(2)';
+        setTimeout(() => {
+            clickedStar.style.transform = '';
+        }, 300);
+        
+        // Fun console message
+        if (this.starCount > 50) {
+            console.log('🌟 So many stars! StarClan is pleased!');
+        }
+    },
+
+    /**
      * Set up all event listeners
      */
     setupEventListeners: function() {
-        // Home screen - start on any tap
-        this.screens.home.addEventListener('click', () => this.showScreen('difficulty'));
-        this.screens.home.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+        // Play button on home screen
+        this.elements.playBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.playSound('success');
             this.showScreen('difficulty');
-        }, { passive: false });
+        });
 
         // Difficulty buttons
         document.querySelectorAll('.btn-difficulty').forEach(btn => {
@@ -156,6 +253,19 @@ const Game = {
                 gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
                 oscillator.start(ctx.currentTime);
                 oscillator.stop(ctx.currentTime + 0.2);
+                break;
+
+            case 'starburst':
+                // Magical sparkle sound
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                oscillator.frequency.setValueAtTime(1200, ctx.currentTime + 0.05);
+                oscillator.frequency.setValueAtTime(1000, ctx.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(1400, ctx.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.12, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.25);
                 break;
         }
     },

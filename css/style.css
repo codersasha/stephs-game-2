@@ -125,16 +125,95 @@ html, body {
     50% { transform: translateY(-10px); }
 }
 
-.start-prompt {
+/* Play Button */
+.btn-play {
+    position: relative;
+    z-index: 10;
+    margin-top: 30px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #333;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    padding: 15px 50px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-play:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(255, 215, 0, 0.6);
+}
+
+.hint-text {
     position: absolute;
-    bottom: 15%;
+    bottom: 10%;
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
     z-index: 10;
 }
 
-.start-prompt p {
-    font-size: clamp(0.9rem, 3vw, 1.1rem);
-    color: rgba(255, 255, 255, 0.8);
-    animation: pulse 2s ease-in-out infinite;
+/* Home Screen Stars */
+.stars-home {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.star-clickable {
+    position: absolute;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: twinkle-star 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+.star-clickable:hover {
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 0, 0.8));
+}
+
+@keyframes twinkle-star {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.star-burst {
+    position: absolute;
+    font-size: 16px;
+    pointer-events: none;
+    animation: star-burst 1s ease-out forwards;
+}
+
+@keyframes star-burst {
+    0% { 
+        transform: scale(0) rotate(0deg); 
+        opacity: 1; 
+    }
+    50% {
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(1) rotate(180deg) translateY(-50px); 
+        opacity: 0; 
+    }
+}
+
+.star-new {
+    animation: star-appear 0.5s ease-out forwards, twinkle-star 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes star-appear {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes pulse {
