@@ -356,6 +356,165 @@ html, body {
     100% { transform: translateY(calc(100vh + 50px)) rotate(720deg); opacity: 0; }
 }
 
+/* ===================== NAME SCREEN ===================== */
+#name-screen {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: white;
+}
+
+.name-content {
+    z-index: 10;
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+.name-content h1 {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    background: linear-gradient(180deg, #ffd700 0%, #ff8c00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 15px rgba(255, 200, 0, 0.5));
+    margin-bottom: 8px;
+}
+
+.name-intro {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 25px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.name-builder {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    margin-bottom: 25px;
+}
+
+.name-prefix-section {
+    margin-bottom: 20px;
+}
+
+.name-prefix-section label,
+.name-suffix-section label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#name-prefix {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 20px;
+    font-size: 1.2rem;
+    border: 3px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#name-prefix:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+#name-prefix::placeholder {
+    color: #999;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.name-suffix-section {
+    margin-bottom: 20px;
+}
+
+.suffix-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.suffix-btn {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 235, 0.85) 100%);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.suffix-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #fff 0%, #f5f5f0 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.suffix-btn.selected {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+    color: #333;
+    border-color: #ff8c00;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.name-preview {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.name-preview p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 5px;
+}
+
+.name-preview h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    background: linear-gradient(180deg, #fff 0%, #98d8aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 10px rgba(152, 216, 170, 0.5));
+    margin-bottom: 5px;
+}
+
+.name-hint {
+    font-size: 0.75rem !important;
+    font-style: italic;
+    opacity: 0.6;
+}
+
+#confirm-name-btn {
+    margin-top: 10px;
+}
+
+#confirm-name-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
 /* ===================== DIFFICULTY SCREEN ===================== */
 #difficulty-screen {
     align-items: center;

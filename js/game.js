@@ -9,6 +9,8 @@ const Game = {
     screens: {},
     elements: {},
     starCount: 0,
+    playerName: '',
+    selectedSuffix: '',
 
     /**
      * Initialize the game
@@ -17,6 +19,7 @@ const Game = {
         // Get all screen elements
         this.screens = {
             home: document.getElementById('home-screen'),
+            name: document.getElementById('name-screen'),
             difficulty: document.getElementById('difficulty-screen'),
             game: document.getElementById('game-screen'),
             rest: document.getElementById('rest-screen'),
@@ -27,6 +30,11 @@ const Game = {
         this.elements = {
             starsContainer: document.getElementById('stars-container'),
             playBtn: document.getElementById('play-btn'),
+            namePrefix: document.getElementById('name-prefix'),
+            suffixGrid: document.getElementById('suffix-grid'),
+            fullNamePreview: document.getElementById('full-name-preview'),
+            confirmNameBtn: document.getElementById('confirm-name-btn'),
+            difficultyGreeting: document.getElementById('difficulty-greeting'),
             nightCount: document.getElementById('night-count'),
             scoreCount: document.getElementById('score-count'),
             reputationFill: document.getElementById('reputation-fill'),
@@ -164,11 +172,46 @@ const Game = {
      * Set up all event listeners
      */
     setupEventListeners: function() {
-        // Play button on home screen
+        // Play button on home screen - goes to name screen
         this.elements.playBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.playSound('success');
-            this.showScreen('difficulty');
+            this.showScreen('name');
+        });
+
+        // Name prefix input
+        this.elements.namePrefix.addEventListener('input', () => {
+            this.updateNamePreview();
+        });
+
+        // Suffix buttons
+        document.querySelectorAll('.suffix-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Deselect others
+                document.querySelectorAll('.suffix-btn').forEach(b => b.classList.remove('selected'));
+                // Select this one
+                btn.classList.add('selected');
+                this.selectedSuffix = btn.dataset.suffix;
+                this.playSound('select');
+                this.updateNamePreview();
+            });
+        });
+
+        // Confirm name button
+        this.elements.confirmNameBtn.addEventListener('click', () => {
+            const prefix = this.elements.namePrefix.value.trim();
+            if (prefix && this.selectedSuffix) {
+                // Store the name (with 'paw' for now - apprentice)
+                this.playerName = prefix + 'paw';
+                this.fullWarriorName = prefix + this.selectedSuffix;
+                this.playSound('success');
+                
+                // Update greeting on difficulty screen
+                this.elements.difficultyGreeting.textContent = 
+                    `Welcome, ${this.playerName}! How challenging should your training be?`;
+                
+                this.showScreen('difficulty');
+            }
         });
 
         // Difficulty buttons
@@ -267,6 +310,26 @@ const Game = {
                 oscillator.start(ctx.currentTime);
                 oscillator.stop(ctx.currentTime + 0.25);
                 break;
+        }
+    },
+
+    /**
+     * Update name preview
+     */
+    updateNamePreview: function() {
+        const prefix = this.elements.namePrefix.value.trim();
+        const suffix = this.selectedSuffix || 'paw';
+        
+        if (prefix) {
+            // Capitalize first letter
+            const formattedPrefix = prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
+            this.elements.fullNamePreview.textContent = formattedPrefix + suffix;
+            
+            // Enable button if both prefix and suffix selected
+            this.elements.confirmNameBtn.disabled = !this.selectedSuffix;
+        } else {
+            this.elements.fullNamePreview.textContent = '___paw';
+            this.elements.confirmNameBtn.disabled = true;
         }
     },
 

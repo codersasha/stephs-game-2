@@ -29,11 +29,67 @@
             </div>
         </div>
 
+        <!-- Name Selection -->
+        <div id="name-screen" class="screen">
+            <div class="forest-bg"></div>
+            <div class="name-content">
+                <h1>🐱 Name Your Medicine Cat</h1>
+                <p class="name-intro">Every medicine cat needs a warrior name!</p>
+                
+                <div class="name-builder">
+                    <div class="name-prefix-section">
+                        <label for="name-prefix">First part of your name:</label>
+                        <input type="text" id="name-prefix" placeholder="Fire, Silver, Leaf..." maxlength="12" autocomplete="off">
+                    </div>
+                    
+                    <div class="name-suffix-section">
+                        <label>Choose your suffix:</label>
+                        <div id="suffix-grid" class="suffix-grid">
+                            <button class="suffix-btn" data-suffix="claw">claw</button>
+                            <button class="suffix-btn" data-suffix="heart">heart</button>
+                            <button class="suffix-btn" data-suffix="shine">shine</button>
+                            <button class="suffix-btn" data-suffix="stream">stream</button>
+                            <button class="suffix-btn" data-suffix="flight">flight</button>
+                            <button class="suffix-btn" data-suffix="leaf">leaf</button>
+                            <button class="suffix-btn" data-suffix="step">step</button>
+                            <button class="suffix-btn" data-suffix="foot">foot</button>
+                            <button class="suffix-btn" data-suffix="fur">fur</button>
+                            <button class="suffix-btn" data-suffix="sky">sky</button>
+                            <button class="suffix-btn" data-suffix="storm">storm</button>
+                            <button class="suffix-btn" data-suffix="pool">pool</button>
+                            <button class="suffix-btn" data-suffix="whisker">whisker</button>
+                            <button class="suffix-btn" data-suffix="tail">tail</button>
+                            <button class="suffix-btn" data-suffix="pelt">pelt</button>
+                            <button class="suffix-btn" data-suffix="fang">fang</button>
+                            <button class="suffix-btn" data-suffix="berry">berry</button>
+                            <button class="suffix-btn" data-suffix="nose">nose</button>
+                            <button class="suffix-btn" data-suffix="flower">flower</button>
+                            <button class="suffix-btn" data-suffix="feather">feather</button>
+                            <button class="suffix-btn" data-suffix="wing">wing</button>
+                            <button class="suffix-btn" data-suffix="cloud">cloud</button>
+                            <button class="suffix-btn" data-suffix="spots">spots</button>
+                            <button class="suffix-btn" data-suffix="stripe">stripe</button>
+                        </div>
+                    </div>
+                    
+                    <div class="name-preview">
+                        <p>Your name will be:</p>
+                        <h2 id="full-name-preview">___paw</h2>
+                        <p class="name-hint">(Medicine cat apprentices end in 'paw' until they earn their full name!)</p>
+                    </div>
+                </div>
+                
+                <button id="confirm-name-btn" class="btn btn-primary" disabled>
+                    ✨ Begin Training ✨
+                </button>
+            </div>
+        </div>
+
         <!-- Difficulty Selection -->
         <div id="difficulty-screen" class="screen">
             <div class="forest-bg"></div>
             <h1>Choose Your Path</h1>
-            <p class="difficulty-intro">How challenging should your medicine cat training be?</p>
+            <p class="difficulty-intro" id="difficulty-greeting">How challenging should your medicine cat training be?</p>
             <div class="difficulty-buttons">
                 <button class="btn btn-difficulty" data-difficulty="easy">
                     <span class="diff-icon">🌸</span>
