@@ -115,6 +115,16 @@ const Game = {
             streamModal: document.getElementById('stream-modal'),
             visionText: document.getElementById('vision-text'),
             streamClose: document.getElementById('stream-close'),
+            talkBtn: document.getElementById('talk-btn'),
+            talkModal: document.getElementById('talk-modal'),
+            talkCats: document.getElementById('talk-cats'),
+            talkClose: document.getElementById('talk-close'),
+            conversationModal: document.getElementById('conversation-modal'),
+            convoCatIcon: document.getElementById('convo-cat-icon'),
+            convoCatName: document.getElementById('convo-cat-name'),
+            conversationContent: document.getElementById('conversation-content'),
+            conversationOptions: document.getElementById('conversation-options'),
+            endConversation: document.getElementById('end-conversation'),
             // Invasion elements
             invasionModal: document.getElementById('invasion-modal'),
             invasionIcon: document.getElementById('invasion-icon'),
@@ -344,6 +354,40 @@ const Game = {
 
         this.elements.streamClose.addEventListener('click', () => {
             this.elements.streamModal.classList.remove('active');
+        });
+
+        // Talk button
+        this.elements.talkBtn.addEventListener('click', () => {
+            this.openTalkMenu();
+        });
+
+        this.elements.talkClose.addEventListener('click', () => {
+            this.elements.talkModal.classList.remove('active');
+        });
+
+        this.elements.endConversation.addEventListener('click', () => {
+            this.elements.conversationModal.classList.remove('active');
+        });
+
+        // Tab switching for conversation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.switchConversationTab(btn.dataset.tab);
+            });
+        });
+
+        // Emotion buttons
+        document.querySelectorAll('.emotion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.expressEmotion(btn.dataset.emotion);
+            });
+        });
+
+        // Action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.doAction(btn.dataset.action);
+            });
         });
 
         // Dream visit step 1: message choices
@@ -1707,6 +1751,350 @@ const Game = {
         // Go to save selection for new life
         this.loadSaveSlots();
         this.showScreen('saves');
+    },
+
+    // ==================== TALK SYSTEM ====================
+
+    currentTalkCat: null,
+
+    /**
+     * Open the talk menu to choose who to talk to
+     */
+    openTalkMenu: function() {
+        const cats = [
+            { name: 'Bramblestar', role: 'Leader', icon: '🦁', personality: 'wise' },
+            { name: 'Squirrelflight', role: 'Deputy', icon: '🐱', personality: 'friendly' },
+            { name: 'Lionblaze', role: 'Warrior', icon: '🦊', personality: 'brave' },
+            { name: 'Dovewing', role: 'Warrior', icon: '🐈', personality: 'gentle' },
+            { name: 'Ivypool', role: 'Warrior', icon: '😸', personality: 'fierce' },
+            { name: 'Berrynose', role: 'Warrior', icon: '😼', personality: 'grumpy' },
+            { name: 'Cinderheart', role: 'Warrior', icon: '😺', personality: 'kind' },
+            { name: 'Fernpaw', role: 'Apprentice', icon: '🐱', personality: 'curious' }
+        ];
+
+        this.elements.talkCats.innerHTML = cats.map(cat => `
+            <button class="talk-cat-btn" data-name="${cat.name}" data-role="${cat.role}" 
+                    data-icon="${cat.icon}" data-personality="${cat.personality}">
+                <span class="talk-cat-icon">${cat.icon}</span>
+                <span class="talk-cat-name">${cat.name}</span>
+                <span class="talk-cat-role">${cat.role}</span>
+            </button>
+        `).join('');
+
+        // Add click listeners
+        this.elements.talkCats.querySelectorAll('.talk-cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.startConversation({
+                    name: btn.dataset.name,
+                    role: btn.dataset.role,
+                    icon: btn.dataset.icon,
+                    personality: btn.dataset.personality
+                });
+            });
+        });
+
+        this.playSound('select');
+        this.elements.talkModal.classList.add('active');
+    },
+
+    /**
+     * Start a conversation with a cat
+     */
+    startConversation: function(cat) {
+        this.currentTalkCat = cat;
+        this.elements.talkModal.classList.remove('active');
+        
+        // Set up conversation header
+        this.elements.convoCatIcon.textContent = cat.icon;
+        this.elements.convoCatName.textContent = cat.name;
+        
+        // Get opening line based on personality
+        const greetings = this.getGreeting(cat.personality);
+        
+        this.elements.conversationContent.innerHTML = `
+            <div class="convo-bubble them">${greetings}</div>
+        `;
+        
+        // Populate say options
+        this.populateSayOptions(cat.personality);
+        
+        // Reset to Say tab
+        this.switchConversationTab('say');
+        
+        this.playSound('select');
+        this.elements.conversationModal.classList.add('active');
+    },
+
+    /**
+     * Get a greeting based on personality
+     */
+    getGreeting: function(personality) {
+        const greetings = {
+            wise: ['"Ah, our medicine cat. Is all well in the den?"', '"May StarClan light your path today."'],
+            friendly: ['"Hey! How are you doing today?"', '"It\'s good to see you! Taking a break?"'],
+            brave: ['"Greetings, medicine cat. Ready for anything?"', '"The Clan rests easier knowing you\'re here."'],
+            gentle: ['"Hello there. It\'s a peaceful day, isn\'t it?"', '"I hope you\'re not too tired from your work."'],
+            fierce: ['"Medicine cat. What brings you here?"', '"Make it quick, I have patrols to run."'],
+            grumpy: ['"Oh, it\'s you. What do you want?"', '"*sighs* I suppose you want to chat?"'],
+            kind: ['"Oh, hello! I was just thinking about you."', '"It\'s so nice to see a friendly face."'],
+            curious: ['"Ooh, the medicine cat! Can you teach me about herbs?"', '"What\'s it like talking to StarClan?"']
+        };
+        const options = greetings[personality] || greetings.friendly;
+        return options[Math.floor(Math.random() * options.length)];
+    },
+
+    /**
+     * Populate say options based on who you're talking to
+     */
+    populateSayOptions: function(personality) {
+        const options = [
+            { text: '"Hello! How are you today?"', type: 'friendly' },
+            { text: '"I\'ve been busy in the medicine den."', type: 'casual' },
+            { text: '"Have you noticed anything strange lately?"', type: 'curious' },
+            { text: '"The Clan seems to be doing well."', type: 'positive' },
+            { text: '"I should get back to work soon."', type: 'exit' }
+        ];
+
+        this.elements.conversationOptions.innerHTML = options.map(opt => `
+            <button class="convo-option-btn" data-type="${opt.type}">${opt.text}</button>
+        `).join('');
+
+        this.elements.conversationOptions.querySelectorAll('.convo-option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.sayResponse(btn.textContent, btn.dataset.type);
+            });
+        });
+    },
+
+    /**
+     * Switch conversation tab
+     */
+    switchConversationTab: function(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+        document.querySelectorAll('.response-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        document.getElementById(`${tab}-panel`).classList.add('active');
+    },
+
+    /**
+     * Say something in conversation
+     */
+    sayResponse: function(text, type) {
+        // Add your message
+        this.addConversationBubble(text, 'you');
+        
+        // Get response
+        setTimeout(() => {
+            const response = this.getCatResponse(type);
+            this.addConversationBubble(response, 'them');
+        }, 500);
+        
+        this.playSound('select');
+    },
+
+    /**
+     * Express an emotion
+     */
+    expressEmotion: function(emotion) {
+        const emotionTexts = {
+            happy: '*purrs happily, eyes bright with joy*',
+            nervous: '*shifts paws nervously, tail twitching*',
+            angry: '*fur bristles, eyes narrowing*',
+            sad: '*ears droop, looking down at paws*',
+            love: '*blushes deeply, looking away shyly* 💕',
+            tired: '*yawns widely, blinking sleepily*',
+            excited: '*bounces on paws, tail waving excitedly*',
+            shy: '*looks away, fur warming with embarrassment*'
+        };
+
+        const text = emotionTexts[emotion] || '*shows emotion*';
+        this.addConversationBubble(text, 'you emotion');
+        
+        // Cat reacts to your emotion
+        setTimeout(() => {
+            const reaction = this.getEmotionReaction(emotion);
+            this.addConversationBubble(reaction, 'them reaction');
+        }, 500);
+        
+        this.playSound('select');
+    },
+
+    /**
+     * Do an action
+     */
+    doAction: function(action) {
+        const actionTexts = {
+            meow: '*lets out a friendly meow*',
+            purr: '*purrs loudly and contentedly*',
+            hiss: '*hisses sharply, showing teeth*',
+            growl: '*growls low in throat*',
+            nuzzle: '*nuzzles gently against them*',
+            'tail-wave': '*waves tail in greeting*',
+            stretch: '*stretches out, claws extending*',
+            groom: '*pauses to groom fur*'
+        };
+
+        const text = actionTexts[action] || '*does something*';
+        this.addConversationBubble(text, 'you action');
+        
+        // Cat reacts to your action
+        setTimeout(() => {
+            const reaction = this.getActionReaction(action);
+            this.addConversationBubble(reaction, 'them reaction');
+        }, 500);
+        
+        this.playSound('select');
+    },
+
+    /**
+     * Add a bubble to the conversation
+     */
+    addConversationBubble: function(text, classes) {
+        const bubble = document.createElement('div');
+        bubble.className = `convo-bubble ${classes}`;
+        bubble.textContent = text;
+        this.elements.conversationContent.appendChild(bubble);
+        this.elements.conversationContent.scrollTop = this.elements.conversationContent.scrollHeight;
+    },
+
+    /**
+     * Get cat's response to what you said
+     */
+    getCatResponse: function(type) {
+        const responses = {
+            friendly: [
+                '"I\'m doing well, thank you for asking!"',
+                '"It\'s a good day to be alive."',
+                '"Better now that I have company!"'
+            ],
+            casual: [
+                '"You work so hard for the Clan."',
+                '"The medicine den always smells nice."',
+                '"I don\'t know how you remember all those herbs!"'
+            ],
+            curious: [
+                '"Hmm, now that you mention it..."',
+                '"I did see something odd by the border..."',
+                '"Nothing I can think of, but I\'ll keep watch."'
+            ],
+            positive: [
+                '"Yes, prey has been running well."',
+                '"StarClan has blessed us this season."',
+                '"Thanks to cats like you!"'
+            ],
+            exit: [
+                '"Of course. The Clan needs you!"',
+                '"Take care of yourself too."',
+                '"May StarClan guide your paws."'
+            ]
+        };
+        const options = responses[type] || responses.friendly;
+        return options[Math.floor(Math.random() * options.length)];
+    },
+
+    /**
+     * Get reaction to your emotion
+     */
+    getEmotionReaction: function(emotion) {
+        const cat = this.currentTalkCat;
+        const reactions = {
+            happy: [
+                `*${cat.name} purrs in response*`,
+                '"Your happiness is contagious!"',
+                `*${cat.name} smiles warmly*`
+            ],
+            nervous: [
+                '"Is everything alright?"',
+                `*${cat.name} looks concerned*`,
+                '"You seem troubled. Want to talk about it?"'
+            ],
+            angry: [
+                `*${cat.name} takes a step back*`,
+                '"Woah, what\'s wrong?"',
+                '"Hey, calm down..."'
+            ],
+            sad: [
+                '"Oh no, what happened?"',
+                `*${cat.name} gently touches nose to your ear*`,
+                '"I\'m here if you need to talk."'
+            ],
+            love: [
+                `*${cat.name} looks surprised, then flattered*`,
+                '"Oh! I... um..." *looks away*',
+                `*${cat.name} blushes slightly*`
+            ],
+            tired: [
+                '"You should get some rest."',
+                '"Don\'t overwork yourself!"',
+                `*${cat.name} nods sympathetically*`
+            ],
+            excited: [
+                '"What\'s got you so excited?"',
+                `*${cat.name} catches your excitement*`,
+                '"I love seeing you so happy!"'
+            ],
+            shy: [
+                `*${cat.name} tilts head curiously*`,
+                '"No need to be shy around me."',
+                '"You\'re quite cute when you\'re shy..."'
+            ]
+        };
+        const options = reactions[emotion] || ['"I see..."'];
+        return options[Math.floor(Math.random() * options.length)];
+    },
+
+    /**
+     * Get reaction to your action
+     */
+    getActionReaction: function(action) {
+        const cat = this.currentTalkCat;
+        const reactions = {
+            meow: [
+                `*${cat.name} meows back*`,
+                '"Meow to you too!"',
+                `*${cat.name} flicks ears in acknowledgment*`
+            ],
+            purr: [
+                `*${cat.name} starts purring too*`,
+                '"That\'s a lovely sound."',
+                `*${cat.name} looks pleased*`
+            ],
+            hiss: [
+                `*${cat.name} jumps back in surprise*`,
+                '"Hey! What was that for?"',
+                `*${cat.name} hisses back defensively*`
+            ],
+            growl: [
+                `*${cat.name} bristles slightly*`,
+                '"Is there a problem?"',
+                `*${cat.name} looks wary*`
+            ],
+            nuzzle: [
+                `*${cat.name} nuzzles back gently*`,
+                '"Aww, that\'s sweet."',
+                `*${cat.name} purrs softly*`
+            ],
+            'tail-wave': [
+                `*${cat.name} waves tail back*`,
+                '"Hello to you too!"',
+                `*${cat.name} nods in greeting*`
+            ],
+            stretch: [
+                '"Making yourself comfortable?"',
+                `*${cat.name} stretches too*`,
+                '"That looks relaxing."'
+            ],
+            groom: [
+                '"You always look so well-groomed."',
+                `*${cat.name} waits patiently*`,
+                '"Taking care of yourself, good."'
+            ]
+        };
+        const options = reactions[action] || [`*${cat.name} watches*`];
+        return options[Math.floor(Math.random() * options.length)];
     }
 };
 

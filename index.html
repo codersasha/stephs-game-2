@@ -350,9 +350,14 @@
                     </div>
                 </div>
                 <p class="rest-message" id="rest-message">Close your eyes and let StarClan guide your dreams...</p>
-                <button id="sleep-btn" class="btn btn-sleep">
-                    😴 Fall Asleep...
-                </button>
+                <div class="rest-actions">
+                    <button id="talk-btn" class="btn btn-talk">
+                        💬 Talk to Someone
+                    </button>
+                    <button id="sleep-btn" class="btn btn-sleep">
+                        😴 Fall Asleep...
+                    </button>
+                </div>
             </div>
             <div class="stars-container">
                 <span class="star">✨</span>
@@ -578,6 +583,125 @@
                     <p class="vision-text" id="vision-text">The water shows you a vision of the living world...</p>
                 </div>
                 <button id="stream-close" class="btn btn-primary">Step back</button>
+            </div>
+        </div>
+
+        <!-- Talk Modal - Choose who to talk to -->
+        <div id="talk-modal" class="modal">
+            <div class="modal-content talk-modal">
+                <h2>💬 Talk to Someone</h2>
+                <p>Who would you like to speak with?</p>
+                <div class="talk-cats" id="talk-cats">
+                    <!-- Cats will be populated here -->
+                </div>
+                <button id="talk-close" class="btn btn-secondary">Maybe later</button>
+            </div>
+        </div>
+
+        <!-- Conversation Modal -->
+        <div id="conversation-modal" class="modal">
+            <div class="modal-content conversation-modal">
+                <div class="conversation-header">
+                    <span class="convo-cat-icon" id="convo-cat-icon">🐱</span>
+                    <span class="convo-cat-name" id="convo-cat-name">Warrior</span>
+                </div>
+                <div class="conversation-content" id="conversation-content">
+                    <div class="convo-bubble them" id="their-message">
+                        "Hello there!"
+                    </div>
+                </div>
+                
+                <!-- Emotion/Action Tabs -->
+                <div class="response-tabs">
+                    <button class="tab-btn active" data-tab="say">💬 Say</button>
+                    <button class="tab-btn" data-tab="feel">💭 Feel</button>
+                    <button class="tab-btn" data-tab="action">🐾 Action</button>
+                </div>
+
+                <!-- Say Options -->
+                <div class="response-panel active" id="say-panel">
+                    <div class="conversation-options" id="conversation-options">
+                        <!-- Response options will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Feel Options -->
+                <div class="response-panel" id="feel-panel">
+                    <div class="emotion-grid">
+                        <button class="emotion-btn" data-emotion="happy">
+                            <span class="emotion-icon">😊</span>
+                            <span>Happy</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="nervous">
+                            <span class="emotion-icon">😰</span>
+                            <span>Nervous</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="angry">
+                            <span class="emotion-icon">😠</span>
+                            <span>Angry</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="sad">
+                            <span class="emotion-icon">😢</span>
+                            <span>Sad</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="love">
+                            <span class="emotion-icon">😳</span>
+                            <span>In Love</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="tired">
+                            <span class="emotion-icon">😴</span>
+                            <span>Tired</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="excited">
+                            <span class="emotion-icon">🤩</span>
+                            <span>Excited</span>
+                        </button>
+                        <button class="emotion-btn" data-emotion="shy">
+                            <span class="emotion-icon">🙈</span>
+                            <span>Shy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Options -->
+                <div class="response-panel" id="action-panel">
+                    <div class="action-grid">
+                        <button class="action-btn" data-action="meow">
+                            <span class="action-icon">🔊</span>
+                            <span>Meow</span>
+                        </button>
+                        <button class="action-btn" data-action="purr">
+                            <span class="action-icon">💗</span>
+                            <span>Purr</span>
+                        </button>
+                        <button class="action-btn" data-action="hiss">
+                            <span class="action-icon">😾</span>
+                            <span>Hiss</span>
+                        </button>
+                        <button class="action-btn" data-action="growl">
+                            <span class="action-icon">😤</span>
+                            <span>Growl</span>
+                        </button>
+                        <button class="action-btn" data-action="nuzzle">
+                            <span class="action-icon">💕</span>
+                            <span>Nuzzle</span>
+                        </button>
+                        <button class="action-btn" data-action="tail-wave">
+                            <span class="action-icon">〰️</span>
+                            <span>Wave Tail</span>
+                        </button>
+                        <button class="action-btn" data-action="stretch">
+                            <span class="action-icon">🐈</span>
+                            <span>Stretch</span>
+                        </button>
+                        <button class="action-btn" data-action="groom">
+                            <span class="action-icon">✨</span>
+                            <span>Groom</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="end-conversation" class="btn btn-secondary">Leave</button>
             </div>
         </div>
     </div>

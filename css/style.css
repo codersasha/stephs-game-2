@@ -2516,6 +2516,318 @@ html, body {
     color: rgba(180, 200, 255, 0.9);
 }
 
+/* ===================== TALK SYSTEM ===================== */
+.rest-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-talk {
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 3px 15px rgba(100, 180, 246, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-talk:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(100, 180, 246, 0.5);
+}
+
+.talk-modal {
+    max-width: 450px;
+}
+
+.talk-cats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.talk-cat-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.talk-cat-btn:hover {
+    background: linear-gradient(135deg, rgba(100, 180, 246, 0.3) 0%, rgba(100, 180, 246, 0.1) 100%);
+    border-color: #64b5f6;
+    transform: scale(1.03);
+}
+
+.talk-cat-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+
+.talk-cat-name {
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.talk-cat-role {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+/* Conversation Modal */
+.conversation-modal {
+    max-width: 420px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.conversation-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.convo-cat-icon {
+    font-size: 2rem;
+}
+
+.convo-cat-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.conversation-content {
+    padding: 20px;
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.convo-bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    max-width: 85%;
+    line-height: 1.4;
+}
+
+.convo-bubble.them {
+    background: linear-gradient(135deg, #3a4a5a 0%, #2c3a4a 100%);
+    border-bottom-left-radius: 5px;
+    margin-right: auto;
+}
+
+.convo-bubble.you {
+    background: linear-gradient(135deg, #4a90d9 0%, #3a7abd 100%);
+    border-bottom-right-radius: 5px;
+    margin-left: auto;
+}
+
+.conversation-options {
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.convo-option-btn {
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.convo-option-btn:hover {
+    background: rgba(100, 180, 246, 0.3);
+    border-color: #64b5f6;
+}
+
+#end-conversation {
+    margin: 15px 20px 20px;
+}
+
+/* Response Tabs */
+.response-tabs {
+    display: flex;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.tab-btn.active {
+    background: rgba(100, 180, 246, 0.2);
+    color: #64b5f6;
+    border-bottom: 2px solid #64b5f6;
+}
+
+.response-panel {
+    display: none;
+    padding: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.response-panel.active {
+    display: block;
+}
+
+/* Emotion Grid */
+.emotion-grid, .action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.emotion-btn, .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.emotion-btn:hover, .action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
+/* Emotion colors */
+.emotion-btn[data-emotion="happy"]:hover {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.2);
+}
+
+.emotion-btn[data-emotion="nervous"]:hover {
+    border-color: #a0a0ff;
+    background: rgba(160, 160, 255, 0.2);
+}
+
+.emotion-btn[data-emotion="angry"]:hover {
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.2);
+}
+
+.emotion-btn[data-emotion="sad"]:hover {
+    border-color: #6bb5ff;
+    background: rgba(107, 181, 255, 0.2);
+}
+
+.emotion-btn[data-emotion="love"]:hover {
+    border-color: #ff69b4;
+    background: rgba(255, 105, 180, 0.2);
+}
+
+.emotion-btn[data-emotion="tired"]:hover {
+    border-color: #9370db;
+    background: rgba(147, 112, 219, 0.2);
+}
+
+.emotion-btn[data-emotion="excited"]:hover {
+    border-color: #ffa500;
+    background: rgba(255, 165, 0, 0.2);
+}
+
+.emotion-btn[data-emotion="shy"]:hover {
+    border-color: #ffb6c1;
+    background: rgba(255, 182, 193, 0.2);
+}
+
+/* Action colors */
+.action-btn[data-action="meow"]:hover {
+    border-color: #87ceeb;
+    background: rgba(135, 206, 235, 0.2);
+}
+
+.action-btn[data-action="purr"]:hover {
+    border-color: #ff69b4;
+    background: rgba(255, 105, 180, 0.2);
+}
+
+.action-btn[data-action="hiss"]:hover {
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.2);
+}
+
+.action-btn[data-action="growl"]:hover {
+    border-color: #ff8c00;
+    background: rgba(255, 140, 0, 0.2);
+}
+
+.action-btn[data-action="nuzzle"]:hover {
+    border-color: #ff69b4;
+    background: rgba(255, 105, 180, 0.2);
+}
+
+.emotion-icon, .action-icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.emotion-btn span:last-child,
+.action-btn span:last-child {
+    font-size: 0.7rem;
+}
+
+/* Conversation bubbles for emotions/actions */
+.convo-bubble.emotion {
+    background: linear-gradient(135deg, #9370db 0%, #7b68ee 100%);
+    font-style: italic;
+}
+
+.convo-bubble.action {
+    background: linear-gradient(135deg, #20b2aa 0%, #008b8b 100%);
+    font-style: italic;
+}
+
+.convo-bubble.reaction {
+    background: linear-gradient(135deg, #556b7a 0%, #3a4a5a 100%);
+}
+
 /* ===================== BUTTONS ===================== */
 .btn {
     padding: 16px 35px;
